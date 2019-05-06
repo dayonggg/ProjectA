@@ -3,6 +3,7 @@
   <head>
     <meta charset="utf-8">
     <title>res</title>
+		<script>if (typeof module === 'object') {window.jQuery = window.$ = module.exports;};</script>
     <% if (htmlWebpackPlugin.options.nodeModules) { %>
       <!-- Add `node_modules/` to global paths so `require` works properly in development -->
       <script>

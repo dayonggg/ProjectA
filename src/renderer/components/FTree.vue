@@ -7,28 +7,22 @@
 		name:"f-tree",
 		data() {
 			return {
-				data: [{
-					label: '一级 1',
-					children: [{
-						label: '二级 1-1'
-					}]
-				}, {
-					label: '一级 2',
-					children: [{
-						label: '二级 2-1'
-					}, {
-						label: '二级 2-2'
-					}]
-				}],
+				data: [],
 				defaultProps: {
 					children: 'children',
 					label: 'label'
 				}
 			};
 		},
+		props:{
+			listdata:Array
+		},
+		mounted() {
+		  this.data = this.listdata;
+		},
 		methods: {
 			handleNodeClick(data) {
-				console.log(data);
+				
 			}
 		}
 	};
@@ -38,6 +32,8 @@
 	.el-tree{
 		background-color: #29292a !important;
 		color: #eee !important;
+		font-size: 12px;
+		width: 100%;
 	}
 	.el-tree-node:focus>.el-tree-node__content{
 		background-color: #373b3a !important;
