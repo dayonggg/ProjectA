@@ -21,8 +21,8 @@
 		"postinstall": ""
 	},
 	"build": {
-		"productName": "res",
-		"appId": "com.kkcode.resmanager",
+		"productName": "GameResourceDesigner",
+		"appId": "com.kkcode.gameresourcedesigner",
 		"directories": {
 			"output": "build"
 		},
