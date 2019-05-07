@@ -71,13 +71,52 @@ app.on('ready', () => {
   if (process.env.NODE_ENV === 'production') autoUpdater.checkForUpdates()
 })
  */
-ipcMain.on('open-dir', (event) => {
+ipcMain.on('open-table', (event,title) => {
 	dialog.showOpenDialog({
-		title:"打开目录",
+		title:title,
 		properties:['openDirectory']
 	},(files) => {
 		if(files){
-			event.sender.send('selected-dir',files)
+			event.sender.send('selected-table',files)
+		}
+	})
+})
+
+ipcMain.on('open-res', (event,title) => {
+	dialog.showOpenDialog({
+		title:title,
+		properties:['openDirectory']
+	},(files) => {
+		if(files){
+			event.sender.send('selected-res',files)
+		}
+	})
+})
+
+ipcMain.on('open-scene', (event) => {
+	dialog.showOpenDialog({
+		title:"选择模型图标",
+		properties:['openFile'],
+		filters:[
+			{name:'场景文件',extensions:['ls']}
+		]
+	},(files) => {
+		if(files){
+			event.sender.send('selected-scene',files)
+		}
+	})
+})
+
+ipcMain.on('open-model', (event) => {
+	dialog.showOpenDialog({
+		title:"选择模型图标",
+		properties:['openFile'],
+		filters:[
+			{name:'模型文件',extensions:['ln']}
+		]
+	},(files) => {
+		if(files){
+			event.sender.send('selected-model',files)
 		}
 	})
 })
