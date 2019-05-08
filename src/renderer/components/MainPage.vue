@@ -8,7 +8,7 @@
 						<i class="el-icon-arrow-left" @click="showLeft"></i>
 					</el-header>
 					<el-container>
-						<f-tree class="f-tree" :listdata="treeData"></f-tree>
+						<f-tree class="f-tree"></f-tree>
 					</el-container>
 					<el-footer height="35px">
 						<i class="el-icon-setting" @click="setProjConfig"></i>
@@ -17,11 +17,12 @@
 
 			</el-aside>
 			<el-main>
-				<el-tabs v-model="editableTabsValue" type="border-card" closable @tab-remove="removeTab">
+				<!-- <el-tabs v-model="editableTabsValue" type="border-card" closable @tab-remove="removeTab">
 					<el-tab-pane v-for="(item, index) in editableTabs" :key="item.name" :label="item.title" :name="item.name">
 						{{item.content}}
 					</el-tab-pane>
-				</el-tabs>
+				</el-tabs> -->
+				<tabs-page></tabs-page>
 			</el-main>
 		</el-container>
 		<!--         Dialog          -->
@@ -44,7 +45,7 @@
 				</el-form-item>
 			</el-form>
 			<span slot="footer" class="dialog-footer">
-				<el-button @click="wsDialogVisible = false">取 消</el-button>
+				<el-button @click="dialogCancel('ws')">取 消</el-button>
 				<el-button :disabled="!workSpace.tableDir ||!workSpace.resDir" type="primary" @click="wsDialogVisible = false">确 定</el-button>
 			</span>
 		</el-dialog>
@@ -55,6 +56,7 @@
 	import ipc from 'electron'
 	import path from 'path'
 	import FTree from './FTree'
+	import TabsPage from './TabsPage'
 	import Common from './js/common.js'
 	import $ from 'Jquery'
 
@@ -63,33 +65,10 @@
 		data() {
 			return {
 				treeVisible: true, //是否展开文件列表
-				wsDialogVisible: true, //是否显示工作空间对话框
-				editableTabsValue: '2',
-				editableTabs: [{
-					title: 'Tab 1',
-					name: '1',
-					content: 'Tab 1 content'
-				}, {
-					title: 'Tab 2',
-					name: '2',
-					content: 'Tab 2 content'
-				}],
-				tabIndex: '2',
-				treeData: [{
-						label: '一级 1',
-						children: [{
-							label: '二级 1-1'
-						}]
-					},
-					{
-						label: '一级 2',
-						children: [{
-							label: '二级 2-1'
-						}, {
-							label: '二级 2-2'
-						}]
-					},
-				],
+				wsDialogVisible: false, //是否显示工作空间对话框
+				editableTabsValue: '',
+				editableTabs: [],
+				tabIndex: '',
 				workSpace: {
 					tableDir: "",
 					resDir: ""
@@ -98,9 +77,13 @@
 			}
 		},
 		components: {
-			FTree
+			FTree,TabsPage
 		},
-		mounted() {},
+		mounted() {
+			// this.editableTabsValue = Common.editableTabsValue
+			// this.editableTabs = Common.editableTabs
+			// this.tabIndex = Common.tabIndex
+		},
 		methods: {
 			showLeft() {
 				if (this.treeVisible) {
@@ -111,35 +94,9 @@
 					$('.f-tree').show()
 				}
 				this.treeVisible = !this.treeVisible
-
 			},
 			setProjConfig() {
 				this.wsDialogVisible = true
-			},
-			addTab(targetName) {
-				let newTabName = ++this.tabIndex + '';
-				this.editableTabs.push({
-					title: 'New Tab',
-					name: newTabName,
-					content: 'New Tab content'
-				});
-				this.editableTabsValue = newTabName;
-			},
-			removeTab(targetName) {
-				let tabs = this.editableTabs;
-				let activeName = this.editableTabsValue;
-				if (activeName === targetName) {
-					tabs.forEach((tab, index) => {
-						if (tab.name === targetName) {
-							let nextTab = tabs[index + 1] || tabs[index - 1];
-							if (nextTab) {
-								activeName = nextTab.name;
-							}
-						}
-					});
-				}
-				this.editableTabsValue = activeName;
-				this.editableTabs = tabs.filter(tab => tab.name !== targetName);
 			},
 			dialogClose(done) {
 				this.$confirm('确认关闭？')
@@ -150,12 +107,17 @@
 					})
 					.catch(_ => {})
 			},
+			dialogCancel(type){
+				if(type=='ws'){
+					Common.init();
+				}
+			},
 			openTableDir() {
 				let self = this;
 				ipc.ipcRenderer.send('open-table', '选择表格目录')
 				ipc.ipcRenderer.on('selected-table', (e, dir) => {
 					let dirPath = path.join(dir.toString())
-					localStorage.setItem('tableDir', dirPath)
+					self.saveSpaceDir ? localStorage.setItem('tableDir', dirPath) : localStorage.setItem('tableDir', '')
 					self.workSpace.tableDir = dirPath
 				});
 			},
@@ -164,11 +126,10 @@
 				ipc.ipcRenderer.send('open-res', '选择资源目录')
 				ipc.ipcRenderer.on('selected-res', (e, dir) => {
 					let dirPath = path.join(dir.toString())
-					localStorage.setItem('resDir', dirPath)
+					self.saveSpaceDir ? localStorage.setItem('resDir', dirPath) : localStorage.setItem('resDir', '')
 					self.workSpace.resDir = dirPath
 				});
 			},
-			
 
 		},
 	}

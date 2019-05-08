@@ -1,0 +1,79 @@
+{
+	"fileTree": [{
+			"label": "Table",
+			"fileType":"dir",
+			"children": [{
+					"label": "level",
+					"fileType":"xlsx",
+					"icon": "el-icon-coin",
+					"showType": "edit",
+					"description": "关卡表",
+					"client": {
+						"useful": true,
+						"ignore": []
+					},
+					"server": {
+						"useful": true,
+						"ignore": ["name"]
+					}
+				},
+				{
+					"label": "scene",
+					"fileType":"xlsx",
+					"icon": "el-icon-coin",
+					"showType": "readonly",
+					"description": "场景表",
+					"client": {
+						"useful": false
+					},
+					"server": {
+						"useful": false
+					}
+				},
+				{
+					"label": "model",
+					"fileType":"xlsx",
+					"icon": "el-icon-coin",
+					"showType": "readonly",
+					"description": "模型表",
+					"client": {
+						"useful": false
+					},
+					"server": {
+						"useful": false
+					}
+				}
+			]
+		},
+		{
+			"label": "Resource",
+			"fileType":"dir",
+			"children": [{
+					"label": "Assets",
+					"icon": "el-icon-view"
+				},
+				{
+					"label": "grounds",
+					"fileType": "ln",
+					"children": []
+				},
+				{
+					"label": "monster",
+					"fileType": "ln",
+					"children": []
+				},
+				{
+					"label": "role",
+					"fileType": "ln",
+					"children": []
+				},
+				{
+					"label": "scene",
+					"fileType": "ls",
+					"children": []
+				}
+
+			]
+		}
+	]
+}
