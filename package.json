@@ -58,11 +58,13 @@
 		"axios": "^0.18.0",
 		"element-ui": "^2.8.2",
 		"jquery": "^3.4.1",
+		"typescript": "^3.4.5",
 		"vue": "^2.5.16",
 		"vue-electron": "^1.0.6",
 		"vue-router": "^3.0.1",
 		"vuex": "^3.0.1",
-		"vuex-electron": "^1.0.0"
+		"vuex-electron": "^1.0.0",
+		"x-data-spreadsheet": "^1.0.22"
 	},
 	"devDependencies": {
 		"ajv": "^6.5.0",

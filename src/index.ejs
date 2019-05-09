@@ -2,8 +2,13 @@
 <html>
   <head>
     <meta charset="utf-8">
-    <title>res</title>
+    <!-- <title>res</title> -->
+		
+		<link rel="stylesheet" href="https://unpkg.com/x-data-spreadsheet@1.0.13/dist/xspreadsheet.css">
+<script src="https://unpkg.com/x-data-spreadsheet@1.0.13/dist/xspreadsheet.js"></script>
+<script src="https://unpkg.com/x-data-spreadsheet@1.0.13/dist/locale/zh-cn.js"></script>
 		<script>if (typeof module === 'object') {window.jQuery = window.$ = module.exports;};</script>
+		
     <% if (htmlWebpackPlugin.options.nodeModules) { %>
       <!-- Add `node_modules/` to global paths so `require` works properly in development -->
       <script>

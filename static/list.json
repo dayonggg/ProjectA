@@ -3,7 +3,7 @@
 			"label": "Table",
 			"fileType":"dir",
 			"children": [{
-					"label": "level",
+					"label": "level.xlsx",
 					"fileType":"xlsx",
 					"icon": "el-icon-coin",
 					"showType": "edit",
@@ -18,7 +18,7 @@
 					}
 				},
 				{
-					"label": "scene",
+					"label": "scene.xlsx",
 					"fileType":"xlsx",
 					"icon": "el-icon-coin",
 					"showType": "readonly",
@@ -31,7 +31,7 @@
 					}
 				},
 				{
-					"label": "model",
+					"label": "model.xlsx",
 					"fileType":"xlsx",
 					"icon": "el-icon-coin",
 					"showType": "readonly",
@@ -49,8 +49,7 @@
 			"label": "Resource",
 			"fileType":"dir",
 			"children": [{
-					"label": "Assets",
-					"icon": "el-icon-view"
+					"label": "Assets"
 				},
 				{
 					"label": "grounds",

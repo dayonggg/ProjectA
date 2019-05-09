@@ -12,7 +12,7 @@ export default {
 		console.log(JSON.parse(d.toString()))
 		return JSON.parse(d.toString());
 	},
-	setTableList:function(){
+	readTabelFile:function(fileName){
 		
 	},
 }

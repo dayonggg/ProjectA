@@ -1,14 +1,15 @@
 <template>
 	<el-tabs v-model="editableTabsValue" type="border-card" closable @tab-remove="removeTab">
 		<el-tab-pane v-for="(item, index) in editableTabs" :key="item.label" :label="item.label" :name="item.label">
-			{{item.description}}
+			<!-- {{item.description}} -->
+			<table-tab :id="item.label" :table="item"></table-tab>
 		</el-tab-pane>
 	</el-tabs>
 </template>
 
 <script>
 	import Bus from './Bus'
-	import Common from './js/common.js'
+	import TableTab from './TableTab'
 
 	export default {
 		name: "tabs-page",
@@ -18,6 +19,9 @@
 				editableTabs: [],
 				tabIndex: '',
 			}
+		},
+		components: {
+			TableTab
 		},
 		mounted() {
 			Bus.$on('addTab', content => {
