@@ -7,8 +7,9 @@
 </template>
 
 <script>
+	import Bus from './Bus'
 	import Common from './js/common.js'
-	
+
 	export default {
 		name: "tabs-page",
 		data() {
@@ -19,31 +20,42 @@
 			}
 		},
 		mounted() {
-			this.update()
+			Bus.$on('addTab', content => {
+				this.addTab(content)
+			})
 		},
 		methods: {
-			update(){
-				this.editableTabsValue = Common.editableTabsValue
-				this.editableTabs = Common.editableTabs
-				this.tabIndex = Common.tabIndex
-			},
 			addTab(targetName) {
-				let self = this
-				Common.addTab(targetName,function(){
-					self.update()
-					console.log('1')
+				let etabs = this.editableTabs;
+				let isnew = true;
+				etabs.forEach((f, index) => {
+					if (f.label == targetName.label) {
+						this.editableTabsValue = targetName.label;
+						isnew = false;
+					}
 				})
-				
+				if (isnew) {
+					this.editableTabs.push(targetName)
+				}
+				this.editableTabsValue = targetName.label
 			},
 			removeTab(targetName) {
-				Common.removeTab(targetName)
-				this.update()
+				let tabs = this.editableTabs
+				let activeName = this.editableTabsValue
+				if (activeName === targetName) {
+					tabs.forEach((tab, index) => {
+						if (tab.label === targetName) {
+							let nextTab = tabs[index + 1] || tabs[index - 1];
+							if (nextTab) {
+								activeName = nextTab.label
+							}
+						}
+					})
+				}
+				this.editableTabsValue = activeName;
+				this.editableTabs = tabs.filter(tab => tab.label !== targetName);
 			},
-		},
-		watch: {
-			editableTabsValue(newValue, oldValue) {
-				console.log("a: "+newValue, oldValue);
-			}
+
 		},
 	}
 </script>

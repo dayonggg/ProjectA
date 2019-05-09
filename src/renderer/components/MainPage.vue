@@ -65,9 +65,7 @@
 		data() {
 			return {
 				treeVisible: true, //是否展开文件列表
-				wsDialogVisible: false, //是否显示工作空间对话框
-				editableTabsValue: '',
-				editableTabs: [],
+				wsDialogVisible: false, //是否显示工作空间对话框,
 				tabIndex: '',
 				workSpace: {
 					tableDir: "",
@@ -80,9 +78,7 @@
 			FTree,TabsPage
 		},
 		mounted() {
-			// this.editableTabsValue = Common.editableTabsValue
-			// this.editableTabs = Common.editableTabs
-			// this.tabIndex = Common.tabIndex
+			
 		},
 		methods: {
 			showLeft() {
@@ -197,11 +193,17 @@
 	}
 
 	.main-page>.el-container>.el-main>.el-tabs,
-	.main-page>.el-container>.el-main>.el-tabs>.el-tabs__header {
+	.main-page>.el-container>.el-main>.el-tabs>.el-tabs__header,
+	.main-page>.el-container>.el-main>.el-tabs>.el-tabs__content{
 		background-color: #232424;
 		border: 0px;
 	}
-
+	
+	.main-page>.el-container>.el-main>.el-tabs{
+		height: 100%;
+		width: 100%;
+	}
+	
 	.el-tabs--border-card>.el-tabs__header .el-tabs__item.is-active {
 		color: #fff !important;
 		background-color: #29292a !important;

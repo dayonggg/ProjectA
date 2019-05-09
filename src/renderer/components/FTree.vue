@@ -8,6 +8,7 @@
 </template>
 
 <script>
+	import Bus from './Bus'
 	import Common from './js/common.js'
 
 	export default {
@@ -27,23 +28,11 @@
 		},
 		methods: {
 			handleNodeClick(data) {
-				// console.log(data)
 				if (data.fileType == "xlsx") {
-					let etabs = Common.editableTabs;
-					let isnew = true;
-					etabs.forEach((f, index) => {
-						if (f.label == data.label) {
-							// Common.editableTabsValue = t.label;
-							isnew = false;
-						}
-					});
-					if (isnew) {
-						Common.addTab(data)
-					}
-					
-
+					Bus.$emit('addTab', data)
 				}
-			}
+			},
+
 		}
 	};
 </script>
