@@ -1,12 +1,9 @@
 <template>
-	<div>
-		<div id="ss"></div>
-	</div>
+	<div>1243</div>
 </template>
 
 <script>
 	import Bus from './Bus'
-	import Common from './js/common.js'
 
 	export default {
 		name: "table-tab",
@@ -21,7 +18,6 @@
 				this.addTab(content)
 			})
 			console.log(this.table)
-			var xt =new Spreadsheet(this.$el);
 		},
 		methods: {}
 	}

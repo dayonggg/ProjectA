@@ -2,7 +2,7 @@
 	<el-tabs v-model="editableTabsValue" type="border-card" closable @tab-remove="removeTab">
 		<el-tab-pane v-for="(item, index) in editableTabs" :key="item.label" :label="item.label" :name="item.label">
 			<!-- {{item.description}} -->
-			<table-tab :id="item.label" :table="item"></table-tab>
+			<table-tab v-if="item.fileType == 'xlsx'" :id="item.label" :table="item"></table-tab>
 		</el-tab-pane>
 	</el-tabs>
 </template>

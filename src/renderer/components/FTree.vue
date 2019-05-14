@@ -9,7 +9,6 @@
 
 <script>
 	import Bus from './Bus'
-	import Common from './js/common.js'
 
 	export default {
 		name: "f-tree",
@@ -23,7 +22,7 @@
 			};
 		},
 		mounted() {
-			let t = Common.init()
+			
 			this.data = t.fileTree
 		},
 		methods: {

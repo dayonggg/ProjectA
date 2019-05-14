@@ -95,7 +95,7 @@ ipcMain.on('open-res', (event,title) => {
 
 ipcMain.on('open-scene', (event) => {
 	dialog.showOpenDialog({
-		title:"选择模型图标",
+		title:"选择场景文件",
 		properties:['openFile'],
 		filters:[
 			{name:'场景文件',extensions:['ls']}
@@ -107,16 +107,44 @@ ipcMain.on('open-scene', (event) => {
 	})
 })
 
-ipcMain.on('open-model', (event) => {
+ipcMain.on('open-scene-png', (event) => {
 	dialog.showOpenDialog({
-		title:"选择模型图标",
+		title:"选择场景行走图",
 		properties:['openFile'],
 		filters:[
-			{name:'模型文件',extensions:['ln']}
+			{name:'行走图',extensions:['png']}
+		]
+	},(files) => {
+		if(files){
+			event.sender.send('selected-scene',files)
+		}
+	})
+})
+
+ipcMain.on('open-model', (event) => {
+	dialog.showOpenDialog({
+		title:"选择模型文件",
+		properties:['openFile'],
+		filters:[
+			{name:'模型文件',extensions:['lh']}
 		]
 	},(files) => {
 		if(files){
 			event.sender.send('selected-model',files)
+		}
+	})
+})
+
+ipcMain.on('open-model-ico', (event) => {
+	dialog.showOpenDialog({
+		title:"选择模型图标",
+		properties:['openFile'],
+		filters:[
+			{name:'模型图标',extensions:['png','jpg','jpeg']}
+		]
+	},(files) => {
+		if(files){
+			event.sender.send('selected-model-ico',files)
 		}
 	})
 })
