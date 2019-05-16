@@ -1,5 +1,5 @@
 <template>
-	<el-tree :data="data" :props="defaultProps" node-key="label" @node-click="nodeClick" default-expand-all>
+	<el-tree :data="data" :props="defaultProps" node-key="label" @node-click="nodeClick">
 		<span class="custom-tree-node" slot-scope="{ node, data }">
 			<i :class="data.icon"></i>
 			<span style="margin-left: 5px;">{{ node.label }}</span>
