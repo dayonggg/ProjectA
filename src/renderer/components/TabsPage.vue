@@ -3,7 +3,6 @@
 		<el-tab-pane v-for="(item, index) in editableTabs" :key="item.label" :label="item.label" :name="item.label">
 			<!-- {{item.description}} -->
 			<table-tab v-if="item.fileType == 'xlsx'" :id="item.label" :table="item"></table-tab>
-			<config-tab v-if="item.fileType == 'conf'" :id="item.label" :config="item"></config-tab>
 		</el-tab-pane>
 	</el-tabs>
 </template>
@@ -11,7 +10,6 @@
 <script>
 	import Bus from './Bus'
 	import TableTab from './TableTab'
-	import ConfigTab from './ConfigTab'
 
 	export default {
 		name: "tabs-page",
@@ -20,11 +18,10 @@
 				editableTabsValue: '',
 				editableTabs: [],
 				tabIndex: '',
-				unSavedTabs:[]
 			}
 		},
 		components: {
-			TableTab,ConfigTab
+			TableTab
 		},
 		mounted() {
 			Bus.$on('addTab', content => {
@@ -68,10 +65,4 @@
 </script>
 
 <style>
-	.el-tabs__item{
-		padding: 0px 15px !important;
-		height: 32px !important;
-		line-height: 32px !important;
-		font-size: 12px !important;
-	}
 </style>
