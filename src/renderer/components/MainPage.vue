@@ -1,6 +1,6 @@
 <template>
 	<el-container class="main-page" v-loading.fullscreen.lock="fullscreenLoading" element-loading-text="加载中"
-    element-loading-background="rgba(0, 0, 0, 0.5)">
+	 element-loading-background="rgba(0, 0, 0, 0.5)">
 		<el-header height="50px">
 			<div class="title">Game Resource Designer</div>
 			<div class="main-menu-panel">
@@ -18,7 +18,7 @@
 					</el-header>
 					<el-container>
 						<!-- 文件列表 -->
-						<f-tree class="f-tree"></f-tree>
+						<f-tree class="f-tree" ref="ftree"></f-tree>
 					</el-container>
 					<el-footer height="35px">
 						<i class="el-icon-setting" @click="setProjConfig"></i>
@@ -130,7 +130,7 @@
 		name: "main-page",
 		data() {
 			return {
-				fullscreenLoading:true,
+				fullscreenLoading: true,
 				treeVisible: true, //是否展开文件列表
 				wsDialogVisible: false, //是否显示工作空间对话框
 				nsDialogVisible: false, //是否显示新建场景对话框
@@ -151,23 +151,7 @@
 					group: ""
 				},
 				listConfigDir: "", //项目配置文件
-				localConfig: {
-					label: '设置',
-					fileType: 'conf',
-					content: {
-						workSpace: this.workSpace,
-						treeData: [{
-							label: "Tables",
-							children: []
-						},{
-							label:"Resource",
-							resDir:"Assets",
-							lsDir:"scene",
-							lhDir:["grounds","monster","role"],
-							children:[]
-						}]
-					}
-				},
+				localConfig: {},
 				saveSpaceDir: true, //是否保存工作空间地址
 				modelGroups: [], //模型类别列表
 			}
@@ -205,9 +189,28 @@
 			},
 			initProjConfig() {
 				let strConfig = localStorage.getItem('config') || ''
+				let cfg = {
+					label: '设置',
+					fileType: 'conf',
+					content: {
+						workSpace: {},
+						treeData: [{
+							label: "Tables",
+							children: []
+						}, {
+							label: "Resource",
+							resDir: "Assets",
+							lsDir: "scene",
+							lhDir: ["grounds", "monster", "role"],
+							children: []
+						}]
+					}
+				}
+				cfg.workSpace = this.workSpace
 				if (strConfig != '') {
-					this.localConfig = JSON.parse(strConfig)
+					cfg = JSON.parse(strConfig)
 				} else {
+					// 表格文件列表
 					let tablelist = fs.readdirSync(this.workSpace.tableDir)
 					for (let i = 0; i < tablelist.length; i++) {
 						if (path.extname(tablelist[i]) == '.xlsx') {
@@ -220,15 +223,73 @@
 								clientIgnore: ['mark'],
 								disabled: false
 							}
-							this.localConfig.content.treeData[0].children.push(tableObj)
+							cfg.content.treeData[0].children.push(tableObj)
 						}
+					}
 
+					let restree = cfg.content.treeData[1]
+
+					// 资源文件列表
+					let resChildren = []
+					let localres = fs.readdirSync(path.join(this.workSpace.resDir, restree.resDir))
+					for (let i = 0; i < localres.length; i++) {
+						let en = path.extname(localres[i])
+						if (en == '.png' || en == '.jpg' || en == '.lav' || en == '.lmat') {
+							let resObj = {
+								label: localres[i],
+								fileType: en
+							}
+							resChildren.push(resObj)
+						}
+					}
+					restree.children.push({
+						label: restree.resDir,
+						children: resChildren
+					})
+					//场景文件列表
+					let sceneChildren = []
+					let localscene = fs.readdirSync(path.join(this.workSpace.resDir, restree.lsDir))
+					for (let i = 0; i < localscene.length; i++) {
+						let en = path.extname(localscene[i])
+						if (en == '.ls') {
+							let resObj = {
+								label: localscene[i],
+								fileType: en
+							}
+							sceneChildren.push(resObj)
+						}
+					}
+					restree.children.push({
+						label: restree.lsDir,
+						children: sceneChildren
+					})
+					//模型文件列表
+
+					for (let i = 0; i < restree.lhDir.length; i++) {
+						let modelChildren = []
+						let localmodel = fs.readdirSync(path.join(this.workSpace.resDir, restree.lhDir[i]))
+						console.log(localmodel)
+						for (let j = 0; j < localmodel.length; j++) {
+							let en = path.extname(localmodel[j])
+							if (en == '.lh') {
+								let resObj = {
+									label: localmodel[j],
+									fileType: en
+								}
+								modelChildren.push(resObj)
+							}
+						}
+						restree.children.push({
+							label: restree.lhDir[i],
+							children: modelChildren
+						})
 					}
 				}
+				console.log(cfg)
+				// localStorage.setItem('config',JSON.stringify(this.localConfig))
+				this.localConfig = cfg
 			},
 			setProjConfig() {
-
-
 				Bus.$emit('addTab', this.localConfig)
 			},
 			dialogClose(done) {
@@ -418,8 +479,8 @@
 	.main-left>.el-container {
 		height: 100%;
 	}
-	
-	.main-left>.el-container>.el-main{
+
+	.main-left>.el-container>.el-main {
 		/* height: calc(100%-60px); */
 	}
 
