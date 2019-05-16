@@ -20,11 +20,12 @@
 				editableTabsValue: '',
 				editableTabs: [],
 				tabIndex: '',
-				unSavedTabs:[]
+				unSavedTabs: ["buff.xlsx"]
 			}
 		},
 		components: {
-			TableTab,ConfigTab
+			TableTab,
+			ConfigTab
 		},
 		mounted() {
 			Bus.$on('addTab', content => {
@@ -37,8 +38,12 @@
 				let isnew = true;
 				etabs.forEach((f, index) => {
 					if (f.label == targetName.label) {
-						this.editableTabsValue = targetName.label;
-						isnew = false;
+						this.editableTabsValue = targetName.label
+						isnew = false
+					}
+					if (f.label == '*'+targetName.label) {
+						this.editableTabsValue = '*'+targetName.label
+						isnew = false
 					}
 				})
 				if (isnew) {
@@ -64,16 +69,22 @@
 			},
 
 		},
+		watch: {
+			unSavedTabs: {
+				handler(newValue, oldValue) {
+					for (let i = 0; i < newValue.length; i++) {
+						if (oldValue[i] != newValue[i]) {
+							console.log(newValue)
+						}
+					}
+				},
+				deep: true
+			}
+		}
 	}
 </script>
 
 <style>
-	.el-tabs__item{
-		padding: 0px 15px !important;
-		height: 32px !important;
-		line-height: 32px !important;
-		font-size: 12px !important;
-	}
 	.el-tabs__item {
 		padding: 0px 15px !important;
 		height: 32px !important;

@@ -25,12 +25,12 @@
 	}
 
 	::-webkit-scrollbar {
-		width: 6px;
+		width: 8px;
 	}
 
 	::-webkit-scrollbar-thumb {
-		border-radius: 6px;
-		-webkit-box-shadow: inset 0 0 3px rgba(0, 0, 0, 0.2);
-		background: #F2F6FC;
+		border-radius: 4px;
+		-webkit-box-shadow: inset 0 0 4px rgba(0, 0, 0, 0.1);
+		background: #DCDFE6;
 	}
 </style>
