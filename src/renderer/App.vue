@@ -1,24 +1,36 @@
 <template>
-  <div id="app">
-    <router-view></router-view>
-  </div>
+	<div id="app">
+		<router-view></router-view>
+	</div>
 </template>
 
 <script>
-  export default {
-    name: 'res'
-  }
+	export default {
+		name: 'res'
+	}
 </script>
 
 <style>
-  /* CSS */
-	html,body,#app{
+	/* CSS */
+	html,
+	body,
+	#app {
 		width: 100%;
 		height: 100%;
 		padding: 0px;
 		margin: 0px;
 		font-size: 14px;
 		/* color: #ddd; */
-		font-family: 'menlo','Consolas';
+		font-family: 'menlo', 'Consolas';
+	}
+
+	::-webkit-scrollbar {
+		width: 6px;
+	}
+
+	::-webkit-scrollbar-thumb {
+		border-radius: 6px;
+		-webkit-box-shadow: inset 0 0 3px rgba(0, 0, 0, 0.2);
+		background: #F2F6FC;
 	}
 </style>

@@ -45,9 +45,14 @@
 		font-size: 13px;
 		width: 100%;
 		/* height: calc(100% - 55px); */
-		overflow: auto;
+		overflow: hidden;
 		color: #000 !important;
 	}
+	
+	.el-tree:hover{
+		overflow:auto
+	}
+	
 	.el-tree-node__content{
 		height: 22px !important;
 	}
