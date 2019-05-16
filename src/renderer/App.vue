@@ -17,6 +17,8 @@
 		height: 100%;
 		padding: 0px;
 		margin: 0px;
-		color: #ddd;
+		font-size: 14px;
+		/* color: #ddd; */
+		font-family: 'menlo','Consolas';
 	}
 </style>

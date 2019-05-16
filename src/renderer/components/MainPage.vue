@@ -1,21 +1,23 @@
 <template>
-	<el-container class="main-page">
+	<el-container class="main-page" v-loading.fullscreen.lock="fullscreenLoading" element-loading-text="加载中"
+    element-loading-background="rgba(0, 0, 0, 0.5)">
 		<el-header height="50px">
 			<div class="title">Game Resource Designer</div>
 			<div class="main-menu-panel">
-				<el-button-group>
+				<el-button-group class="main-menu-addgroup">
 					<el-button icon="el-icon-picture-outline" size="mini" @click="nsDialogVisible = true"></el-button>
 					<el-button icon="el-icon-menu" size="mini" @click="nmDialogVisible = true"></el-button>
 				</el-button-group>
 			</div>
 		</el-header>
 		<el-container>
-			<el-aside class="main-left" width="200px">
+			<el-aside class="main-left" width="240px">
 				<el-container>
 					<el-header height="25px" class="main-left-ctrl">
 						<i class="el-icon-arrow-left" @click="showLeft"></i>
 					</el-header>
 					<el-container>
+						<!-- 文件列表 -->
 						<f-tree class="f-tree"></f-tree>
 					</el-container>
 					<el-footer height="35px">
@@ -33,15 +35,15 @@
 		<el-dialog title="设置工作空间" :visible.sync="wsDialogVisible" :before-close="dialogClose">
 			<el-form>
 				<el-form-item>
-					<el-input v-model="workSpace.tableDir" :readonly="true">
+					<el-input v-model="workSpace.tableDir">
 						<template slot="prepend">表格目录</template>
 						<el-button @click="openTableDir" slot="append" icon="el-icon-folder-opened"></el-button>
 					</el-input>
 				</el-form-item>
 				<el-form-item>
-					<el-input v-model="workSpace.resDir" :readonly="true">
+					<el-input v-model="workSpace.resDir">
 						<template slot="prepend">资源目录</template>
-						<el-button @cliack="openResDir" slot="append" icon="el-icon-folder-opened"></el-button>
+						<el-button @click="openResDir" slot="append" icon="el-icon-folder-opened"></el-button>
 					</el-input>
 				</el-form-item>
 				<el-form-item style="text-align: right;">
@@ -63,7 +65,7 @@
 					</el-input>
 				</el-form-item>
 				<el-form-item>
-					<el-input v-model="newScene.file" :readonly="true">
+					<el-input v-model="newScene.file">
 						<template slot="prepend">文件地址</template>
 						<el-button @click="selectSceneFile" slot="append" icon="el-icon-folder-opened"></el-button>
 					</el-input>
@@ -93,7 +95,7 @@
 					</el-col>
 				</el-form-item>
 				<el-form-item>
-					<el-input v-model="newModel.file" :readonly="true">
+					<el-input v-model="newModel.file">
 						<template slot="prepend">文件地址</template>
 						<el-button @click="selectModelFile" slot="append" icon="el-icon-folder-opened"></el-button>
 					</el-input>
@@ -121,12 +123,14 @@
 	import path from 'path'
 	import FTree from './FTree'
 	import TabsPage from './TabsPage'
+	import Bus from './Bus'
 	import $ from 'Jquery'
 
 	export default {
 		name: "main-page",
 		data() {
 			return {
+				fullscreenLoading:true,
 				treeVisible: true, //是否展开文件列表
 				wsDialogVisible: false, //是否显示工作空间对话框
 				nsDialogVisible: false, //是否显示新建场景对话框
@@ -147,9 +151,25 @@
 					group: ""
 				},
 				listConfigDir: "", //项目配置文件
-
+				localConfig: {
+					label: '设置',
+					fileType: 'conf',
+					content: {
+						workSpace: this.workSpace,
+						treeData: [{
+							label: "Tables",
+							children: []
+						},{
+							label:"Resource",
+							resDir:"Assets",
+							lsDir:"scene",
+							lhDir:["grounds","monster","role"],
+							children:[]
+						}]
+					}
+				},
 				saveSpaceDir: true, //是否保存工作空间地址
-				modelGroups: ["grounds", "role"], //模型类别列表
+				modelGroups: [], //模型类别列表
 			}
 		},
 		components: {
@@ -159,27 +179,57 @@
 		mounted() {
 			this.workSpace.tableDir = localStorage.getItem('tableDir')
 			this.workSpace.resDir = localStorage.getItem('resDir')
-			console.log(this.workSpace)
+
 			if (this.workSpace.tableDir == null || this.workSpace.resDir == null) {
 				this.wsDialogVisible = true
 			}
-			this.listConfigDir = path.join(__static, "list.json")
-			let d = fs.readFileSync(this.listConfigDir)
-			this.config = JSON.parse(d.toString())
+			this.initProjConfig()
+			this.modelGroups = this.localConfig.content.treeData[1].lhDir
+			Bus.$emit('updataTree', this.localConfig.content.treeData)
+			this.fullscreenLoading = false
 		},
 		methods: {
 			showLeft() {
 				if (this.treeVisible) {
 					$('.main-left').width('26px')
 					$('.f-tree').hide()
+					$('.main-left-ctrl i').removeClass('el-icon-arrow-left')
+					$('.main-left-ctrl i').addClass('el-icon-arrow-right')
 				} else {
-					$('.main-left').width('200px')
+					$('.main-left').width('240px')
 					$('.f-tree').show()
+					$('.main-left-ctrl i').removeClass('el-icon-arrow-right')
+					$('.main-left-ctrl i').addClass('el-icon-arrow-left')
 				}
 				this.treeVisible = !this.treeVisible
 			},
+			initProjConfig() {
+				let strConfig = localStorage.getItem('config') || ''
+				if (strConfig != '') {
+					this.localConfig = JSON.parse(strConfig)
+				} else {
+					let tablelist = fs.readdirSync(this.workSpace.tableDir)
+					for (let i = 0; i < tablelist.length; i++) {
+						if (path.extname(tablelist[i]) == '.xlsx') {
+							let tableObj = {
+								label: tablelist[i],
+								fileType: 'xlsx',
+								byServer: true,
+								byClient: true,
+								serverIgnore: ['mark'],
+								clientIgnore: ['mark'],
+								disabled: false
+							}
+							this.localConfig.content.treeData[0].children.push(tableObj)
+						}
+
+					}
+				}
+			},
 			setProjConfig() {
-				this.wsDialogVisible = true
+
+
+				Bus.$emit('addTab', this.localConfig)
 			},
 			dialogClose(done) {
 				this.$confirm('确认关闭？')
@@ -326,21 +376,27 @@
 		border: none;
 	}
 
+	.main-page>.el-header {
+		padding: 0px;
+	}
+
 	.title {
-		height: 20px;
+		height: 25px;
 		width: 100%;
-		line-height: 20px;
+		line-height: 25px;
 		text-align: center;
-		font-size: 12px;
 		font-weight: 600;
 	}
 
 	.main-menu-panel {
-		height: 20px;
+		height: 25px;
 		line-height: 20px;
 		width: 100%;
 		text-align: left;
-		padding-left: 20px;
+	}
+
+	.main-menu-addgroup {
+		margin: 0px 40px;
 	}
 
 	.main-menu-panel .el-button {
@@ -352,15 +408,19 @@
 	}
 
 	.main-page>.el-header {
-		background-color: #3c3f3e;
+		/* background-color: #3c3f3e; */
 	}
 
 	.main-page>.el-container>.el-aside {
-		background-color: #29292a;
+		/* background-color: #29292a; */
 	}
 
 	.main-left>.el-container {
 		height: 100%;
+	}
+	
+	.main-left>.el-container>.el-main{
+		/* height: calc(100%-60px); */
 	}
 
 	.main-left>.el-container>.el-footer {
@@ -370,12 +430,12 @@
 	}
 
 	.main-left>.el-container>.el-footer>i {
-		color: #ddd;
+		/* color: #ddd; */
 		cursor: pointer;
 	}
 
 	.main-left>.el-container>.el-footer>i:hover {
-		color: #fff;
+		/* color: #fff; */
 	}
 
 	.main-left-ctrl {
@@ -383,26 +443,27 @@
 		line-height: 20px !important;
 		text-align: right !important;
 		padding: 5px 5px !important;
+
 	}
 
 	.main-left-ctrl>i {
-		color: #ddd;
 		cursor: pointer;
+		color: #C0C4CC;
 	}
 
 	.main-left-ctrl>i:hover {
-		color: #fff;
+		color: #303133;
 	}
 
 	.main-page>.el-container>.el-main {
 		padding: 4px;
-		background-color: #232424;
+		/* background-color: #232424; */
 	}
 
 	.main-page>.el-container>.el-main>.el-tabs,
 	.main-page>.el-container>.el-main>.el-tabs>.el-tabs__header,
 	.main-page>.el-container>.el-main>.el-tabs>.el-tabs__content {
-		background-color: #232424;
+		/* background-color: #232424; */
 		border: 0px;
 	}
 
@@ -412,13 +473,13 @@
 	}
 
 	.el-tabs--border-card>.el-tabs__header .el-tabs__item.is-active {
-		color: #fff !important;
-		background-color: #29292a !important;
-		border-color: #29292a !important;
+		/* color: #fff !important; */
+		/* background-color: #29292a !important; */
+		/* border-color: #29292a !important; */
 	}
 
 	.el-tabs__item:hover {
-		color: #fff !important;
+		/* color: #fff !important; */
 	}
 
 	.new-model-ico {
