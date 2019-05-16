@@ -1,5 +1,5 @@
 <template>
-	<el-tree :data="data" :props="defaultProps" node-key="label" @node-click="handleNodeClick" default-expand-all>
+	<el-tree :data="data" :props="defaultProps" node-key="label" @node-click="nodeClick" default-expand-all>
 		<span class="custom-tree-node" slot-scope="{ node, data }">
 			<i :class="data.icon"></i>
 			<span style="margin-left: 5px;">{{ node.label }}</span>
@@ -21,12 +21,14 @@
 				}
 			};
 		},
+		props: ['treeData'],
 		mounted() {
-			
-			this.data = t.fileTree
+			Bus.$on('updataTree', content => {
+				this.data = content
+			})
 		},
 		methods: {
-			handleNodeClick(data) {
+			nodeClick(data) {
 				if (data.fileType == "xlsx") {
 					Bus.$emit('addTab', data)
 				}
@@ -38,14 +40,20 @@
 
 <style>
 	.el-tree {
-		background-color: #29292a !important;
-		color: #eee !important;
-		font-size: 12px;
+		/* background-color: #29292a !important; */
+		/* color: #eee !important; */
+		font-size: 13px;
 		width: 100%;
+		/* height: calc(100% - 55px); */
+		overflow: auto;
+		color: #000 !important;
+	}
+	.el-tree-node__content{
+		height: 22px !important;
 	}
 
 	.el-tree-node:focus>.el-tree-node__content {
-		background-color: #373b3a !important;
+		/* background-color: #373b3a !important; */
 	}
 
 	.el-tree-node:active,
@@ -55,6 +63,6 @@
 
 	.el-tree-node:active>.el-tree-node__content,
 	.el-tree-node:hover>.el-tree-node__content {
-		background-color: #373b3a;
+		/* background-color: #373b3a; */
 	}
 </style>
