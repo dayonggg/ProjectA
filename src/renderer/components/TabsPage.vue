@@ -74,4 +74,10 @@
 		line-height: 32px !important;
 		font-size: 12px !important;
 	}
+	.el-tabs__item {
+		padding: 0px 15px !important;
+		height: 32px !important;
+		line-height: 32px !important;
+		font-size: 12px !important;
+	}
 </style>
