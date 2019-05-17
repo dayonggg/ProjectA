@@ -192,28 +192,26 @@
 				this.treeVisible = !this.treeVisible
 			},
 			initProjConfig() {
-				let strConfig = localStorage.getItem('config') || ''
-				let cfg = {
-					label: '设置',
-					fileType: 'conf',
-					content: {
-						workSpace: {},
-						treeData: [{
-							label: "Tables",
-							children: []
-						}, {
-							label: "Resource",
-							resDir: "Assets",
-							lsDir: "scene",
-							lhDir: ["grounds", "monster", "role"],
-							children: []
-						}]
-					}
-				}
-				cfg.workSpace = this.workSpace
-				if (strConfig != '') {
-					cfg = JSON.parse(strConfig)
+				let strConfig = localStorage.getItem('config')
+				if (strConfig != null) {
+					this.localConfig = JSON.parse(strConfig)
 				} else {
+					let cfg = {
+						label: '设置',
+						fileType: 'conf',
+						content: {
+							treeData: [{
+								label: "Tables",
+								children: []
+							}, {
+								label: "Resource",
+								resDir: "Assets",
+								lsDir: "scene",
+								lhDir: ["grounds", "monster", "role"],
+								children: []
+							}]
+						}
+					}
 					// 表格文件列表
 					let tablelist = fs.readdirSync(this.workSpace.tableDir)
 					for (let i = 0; i < tablelist.length; i++) {
@@ -287,22 +285,24 @@
 							children: modelChildren
 						})
 					}
+					console.log(cfg)
+					localStorage.setItem('config', JSON.stringify(cfg))
+					this.localConfig = cfg
 				}
-				// localStorage.setItem('config',JSON.stringify(this.localConfig))
-				this.localConfig = cfg
+
 			},
 			setProjConfig() {
 				if (!this.configed) {
 					Bus.$emit('addTab', this.localConfig)
 				}
 			},
-			dialogWSClose(done){
+			dialogWSClose(done) {
 				his.$confirm('未设置工作路径无法使用，你确定要退出应用吗？')
 					.then(_ => {
 						this.dialogCancel()
 						done()
 					})
-					.catch(_ => {})	
+					.catch(_ => {})
 			},
 			dialogClose(done) {
 				this.$confirm('确认关闭？')
