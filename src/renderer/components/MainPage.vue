@@ -5,8 +5,8 @@
 			<div class="title">Game Resource Designer</div>
 			<div class="main-menu-panel">
 				<el-button-group class="main-menu-addgroup">
-					<el-button icon="el-icon-picture-outline" size="mini" @click="nsDialogVisible = true" :disabled="configed"></el-button>
-					<el-button icon="el-icon-menu" size="mini" @click="nmDialogVisible = true" :disabled="configed"></el-button>
+					<el-button icon="el-icon-picture-outline" size="mini" @click="openNS" :disabled="configed"></el-button>
+					<el-button icon="el-icon-menu" size="mini" @click="openNM" :disabled="configed"></el-button>
 				</el-button-group>
 			</div>
 		</el-header>
@@ -32,7 +32,7 @@
 		</el-container>
 		<!--         Dialog          -->
 		<!-- 工作空间 -->
-		<el-dialog title="设置工作空间" :visible.sync="wsDialogVisible" :before-close="dialogClose">
+		<el-dialog title="设置工作空间" :visible.sync="wsDialogVisible" :before-close="dialogWSClose">
 			<el-form>
 				<el-form-item>
 					<el-input v-model="workSpace.tableDir">
@@ -131,7 +131,7 @@
 		data() {
 			return {
 				fullscreenLoading: true,
-				configed:true,
+				configed: true,
 				treeVisible: true, //是否展开文件列表
 				wsDialogVisible: false, //是否显示工作空间对话框
 				nsDialogVisible: false, //是否显示新建场景对话框
@@ -167,13 +167,14 @@
 
 			if (this.workSpace.tableDir == null || this.workSpace.resDir == null) {
 				this.wsDialogVisible = true
-			}else{
+			} else {
 				this.initProjConfig()
 				this.modelGroups = this.localConfig.content.treeData[1].lhDir
+				console.log('modelGroups:',this.modelGroups)
 				Bus.$emit('updataTree', this.localConfig.content.treeData)
 				this.configed = false
 			}
-			
+
 			this.fullscreenLoading = false
 		},
 		methods: {
@@ -294,14 +295,23 @@
 				this.localConfig = cfg
 			},
 			setProjConfig() {
-				if(!this.configed){
+				if (!this.configed) {
 					Bus.$emit('addTab', this.localConfig)
 				}
+			},
+			dialogWSClose(done){
+				his.$confirm('未设置工作路径无法使用，你确定要退出应用吗？')
+					.then(_ => {
+						this.dialogCancel()
+						done()
+					})
+					.catch(_ => {})	
 			},
 			dialogClose(done) {
 				this.$confirm('确认关闭？')
 					.then(_ => {
 						this.dialogCancel()
+						this.configed = false
 						done()
 					})
 					.catch(_ => {})
@@ -319,7 +329,7 @@
 					let dirPath = path.join(dir.toString())
 					self.saveSpaceDir ? localStorage.setItem('tableDir', dirPath) : localStorage.setItem('tableDir', '')
 					self.workSpace.tableDir = dirPath
-				});
+				})
 			},
 			openResDir() {
 				let self = this
@@ -330,9 +340,17 @@
 					self.workSpace.resDir = dirPath
 				});
 			},
-			addWS(){
+			addWS() {
 				this.wsDialogVisible = false
 				this.configed = false
+			},
+			openNS() {
+				this.configed = true
+				this.nsDialogVisible = true
+			},
+			openNM() {
+				this.configed = true
+				this.nmDialogVisible = true
 			},
 			fileOperation(fileObj, group) {
 				let filePath = path.join(fileObj)
@@ -501,12 +519,12 @@
 	}
 
 	.main-left>.el-container>.el-footer>i {
-		/* color: #ddd; */
+		color: #909399;
 		cursor: pointer;
 	}
 
 	.main-left>.el-container>.el-footer>i:hover {
-		/* color: #fff; */
+		color: #606266;
 	}
 
 	.main-left-ctrl {
