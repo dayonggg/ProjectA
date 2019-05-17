@@ -15,11 +15,54 @@
 				<el-tag :key="group" v-for="group in modelGroups" closable :disable-transitions="false" @close="tagClose(group)">
 					{{group}}
 				</el-tag>
-				<el-input class="input-new-tag" v-if="tagInputVisible" v-model="tagInputValue" ref="saveTagInput" size="small"
+				<el-input class="input-new-tag" v-if="tagInputVisible" v-model="groupInputValue" ref="saveGroupInput" size="small"
 				 @keyup.enter.native="addGroup" @blur="addGroup">
 				</el-input>
-				<el-button v-else class="button-new-tag" size="small" @click="showTagInput"> + </el-button>
+				<el-button v-else class="button-new-tag" size="small" @click="showGroupInput"> + </el-button>
 			</el-form-item>
+		</el-form>
+		<el-divider content-position="left">表格设定</el-divider>
+		<el-form size="mini">
+			<el-form-item>
+				<el-table :data="tables" height="300" border style="width: 100%">
+					<el-table-column type="expand" width="40">
+						<template slot-scope="props">
+							<el-form label-position="right" inline class="demo-table-expand">
+								<el-form-item label="表名">
+									<span>{{ props.row.label }}</span>
+								</el-form-item>
+								<el-form-item label="前端导出忽略" v-if="props.row.byClient">
+
+								</el-form-item>
+								<el-form-item label="后端导出忽略" v-if="props.row.byServer">
+
+								</el-form-item>
+							</el-form>
+						</template>
+					</el-table-column>
+					<el-table-column prop="label" label="表名">
+					</el-table-column>
+					<el-table-column prop="byClient" label="客户端" width="70">
+						<template slot-scope="scope">
+							<el-switch :width="25" v-model="scope.row.byClient">
+							</el-switch>
+						</template>
+					</el-table-column>
+					<el-table-column prop="byServer" label="服务器" width="70">
+						<template slot-scope="scope">
+							<el-switch :width="25" v-model="scope.row.byServer">
+							</el-switch>
+						</template>
+					</el-table-column>
+					<el-table-column prop="disabled" label="是否可见" width="80">
+						<template slot-scope="scope">
+							<el-switch :width="25" v-model="!scope.row.disabled">
+							</el-switch>
+						</template>
+					</el-table-column>
+				</el-table>
+			</el-form-item>
+
 		</el-form>
 	</div>
 </template>
@@ -37,7 +80,7 @@
 				modelGroups: [],
 				tables: [],
 				tagInputVisible: false,
-				tagInputValue: ''
+				groupInputValue: ''
 			}
 		},
 		mounted() {
@@ -47,27 +90,37 @@
 		},
 		methods: {
 			tagClose(group) {
-				this.modelGroups.splice(this.modelGroups.indexOf(group), 1)
+				this.$confirm('确定要删除 ' + group + ' 分组吗？')
+					.then(_ => {
+						this.modelGroups.splice(this.modelGroups.indexOf(group), 1)
+					})
+					.catch(_ => {})
 			},
-			showTagInput() {
+			showGroupInput() {
 				this.tagInputVisible = true;
 				this.$nextTick(_ => {
-					this.$refs.saveTagInput.$refs.input.focus()
+					this.$refs.saveGroupInput.$refs.input.focus()
 				})
 			},
 			addGroup() {
-				let tagInputValue = this.tagInputValue
-				if (tagInputValue) {
-					this.modelGroups.push(tagInputValue)
+				let groupInputValue = this.groupInputValue
+				if (groupInputValue) {
+					this.modelGroups.push(groupInputValue)
 				}
 				this.tagInputVisible = false
-				this.tagInputValue = ''
+				this.groupInputValue = ''
 			}
 		}
 	}
 </script>
 
 <style>
+	.el-divider__text,
+	.el-link {
+		font-size: 15px !important;
+		font-weight: 600 !important;
+	}
+
 	.el-tag+.el-tag {
 		margin-left: 10px;
 	}
@@ -84,5 +137,40 @@
 		width: 90px !important;
 		margin-left: 10px;
 		vertical-align: bottom;
+	}
+
+	.el-table td,
+	.el-table th {
+		padding: 4px 0px !important;
+	}
+
+	.el-table .el-switch__core {
+		height: 15px;
+	}
+
+	.el-switch.is-checked .el-switch__core::after {
+		margin-left: -12px !important;
+	}
+
+	.el-switch__core:after {
+		width: 11px !important;
+		height: 11px !important;
+	}
+
+	.demo-table-expand {
+		padding: 5px 10px 5px 10px;
+		margin-left: 18px;
+		border-left: 1px #99a9bf dotted;
+	}
+
+	.demo-table-expand label {
+		width: 100px;
+		color: #99a9bf;
+	}
+
+	.demo-table-expand .el-form-item {
+		margin-right: 0;
+		margin-bottom: 0;
+		width: 50%;
 	}
 </style>
