@@ -170,7 +170,6 @@
 			} else {
 				this.initProjConfig()
 				this.modelGroups = this.localConfig.content.treeData[1].lhDir
-				console.log('modelGroups:',this.modelGroups)
 				Bus.$emit('updataTree', this.localConfig.content.treeData)
 				this.configed = false
 			}
@@ -273,7 +272,6 @@
 					for (let i = 0; i < restree.lhDir.length; i++) {
 						let modelChildren = []
 						let localmodel = fs.readdirSync(path.join(this.workSpace.resDir, restree.lhDir[i]))
-						console.log(localmodel)
 						for (let j = 0; j < localmodel.length; j++) {
 							let en = path.extname(localmodel[j])
 							if (en == '.lh') {
@@ -290,7 +288,6 @@
 						})
 					}
 				}
-				console.log(cfg)
 				// localStorage.setItem('config',JSON.stringify(this.localConfig))
 				this.localConfig = cfg
 			},

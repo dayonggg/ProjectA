@@ -14,10 +14,7 @@
 			config: Object
 		},
 		mounted() {
-			Bus.$on('open-config', content => {
-				this.addTab(content)
-			})
-			console.log(this.table)
+			
 		},
 		methods: {}
 	}

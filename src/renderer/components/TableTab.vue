@@ -14,9 +14,6 @@
 			table: Object
 		},
 		mounted() {
-			Bus.$on('open-excel', content => {
-				this.addTab(content)
-			})
 			console.log(this.table)
 		},
 		methods: {}
