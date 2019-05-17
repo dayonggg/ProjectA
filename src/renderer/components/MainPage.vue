@@ -5,8 +5,8 @@
 			<div class="title">Game Resource Designer</div>
 			<div class="main-menu-panel">
 				<el-button-group class="main-menu-addgroup">
-					<el-button icon="el-icon-picture-outline" size="mini" @click="nsDialogVisible = true"></el-button>
-					<el-button icon="el-icon-menu" size="mini" @click="nmDialogVisible = true"></el-button>
+					<el-button icon="el-icon-picture-outline" size="mini" @click="nsDialogVisible = true" :disabled="configed"></el-button>
+					<el-button icon="el-icon-menu" size="mini" @click="nmDialogVisible = true" :disabled="configed"></el-button>
 				</el-button-group>
 			</div>
 		</el-header>
@@ -52,7 +52,7 @@
 			</el-form>
 			<span slot="footer" class="dialog-footer">
 				<el-button @click="dialogCancel">取 消</el-button>
-				<el-button :disabled="!workSpace.tableDir ||!workSpace.resDir" type="primary" @click="wsDialogVisible = false">确 定</el-button>
+				<el-button :disabled="!workSpace.tableDir ||!workSpace.resDir" type="primary" @click="addWS">确 定</el-button>
 			</span>
 		</el-dialog>
 		<!-- 新增场景 -->
@@ -131,6 +131,7 @@
 		data() {
 			return {
 				fullscreenLoading: true,
+				configed:true,
 				treeVisible: true, //是否展开文件列表
 				wsDialogVisible: false, //是否显示工作空间对话框
 				nsDialogVisible: false, //是否显示新建场景对话框
@@ -166,10 +167,13 @@
 
 			if (this.workSpace.tableDir == null || this.workSpace.resDir == null) {
 				this.wsDialogVisible = true
+			}else{
+				this.initProjConfig()
+				this.modelGroups = this.localConfig.content.treeData[1].lhDir
+				Bus.$emit('updataTree', this.localConfig.content.treeData)
+				this.configed = false
 			}
-			this.initProjConfig()
-			this.modelGroups = this.localConfig.content.treeData[1].lhDir
-			Bus.$emit('updataTree', this.localConfig.content.treeData)
+			
 			this.fullscreenLoading = false
 		},
 		methods: {
@@ -290,7 +294,9 @@
 				this.localConfig = cfg
 			},
 			setProjConfig() {
-				Bus.$emit('addTab', this.localConfig)
+				if(!this.configed){
+					Bus.$emit('addTab', this.localConfig)
+				}
 			},
 			dialogClose(done) {
 				this.$confirm('确认关闭？')
@@ -323,6 +329,10 @@
 					self.saveSpaceDir ? localStorage.setItem('resDir', dirPath) : localStorage.setItem('resDir', '')
 					self.workSpace.resDir = dirPath
 				});
+			},
+			addWS(){
+				this.wsDialogVisible = false
+				this.configed = false
 			},
 			fileOperation(fileObj, group) {
 				let filePath = path.join(fileObj)
