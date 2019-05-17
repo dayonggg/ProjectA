@@ -2,7 +2,7 @@
 	<el-tree :data="data" :props="defaultProps" node-key="label" @node-click="nodeClick">
 		<span class="custom-tree-node" slot-scope="{ node, data }">
 			<i :class="data.icon"></i>
-			<span style="margin-left: 5px;">{{ node.label }}</span>
+			<span :class="{ disabled: data.disabled }" style="margin-left: 5px;">{{ node.label }}</span>
 		</span>
 	</el-tree>
 </template>
@@ -29,7 +29,7 @@
 		},
 		methods: {
 			nodeClick(data) {
-				if (data.fileType == "xlsx") {
+				if (data.fileType == "xlsx" && data.disabled == false) {
 					Bus.$emit('addTab', data)
 				}
 			},
@@ -69,5 +69,8 @@
 	.el-tree-node:active>.el-tree-node__content,
 	.el-tree-node:hover>.el-tree-node__content {
 		/* background-color: #373b3a; */
+	}
+	.disabled{
+		color: red;
 	}
 </style>
