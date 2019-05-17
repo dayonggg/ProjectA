@@ -3,7 +3,7 @@
 		<el-tab-pane v-for="(item, index) in editableTabs" :key="item.label" :label="item.label" :name="item.label">
 			<!-- {{item.description}} -->
 			<table-tab v-if="item.fileType == 'xlsx'" :id="item.label" :table="item"></table-tab>
-			<config-tab v-if="item.fileType == 'conf'" :id="item.label" :config="item"></config-tab>
+			<config-tab v-if="item.fileType == 'conf'" :id="item.label"></config-tab>
 		</el-tab-pane>
 	</el-tabs>
 </template>
