@@ -297,7 +297,7 @@
 				}
 			},
 			dialogWSClose(done) {
-				his.$confirm('未设置工作路径无法使用，你确定要退出应用吗？')
+				this.$confirm('未设置工作路径无法使用，你确定要退出应用吗？')
 					.then(_ => {
 						this.dialogCancel()
 						done()
