@@ -28,11 +28,8 @@
 					<el-table-column type="expand" width="40">
 						<template slot-scope="props">
 							<el-form label-position="right" inline class="demo-table-expand">
-								<el-form-item label="表名">
-									<span>{{ props.row.label }}</span>
-								</el-form-item>
 								<el-form-item label="前端导出忽略" v-if="props.row.byClient">
-
+									
 								</el-form-item>
 								<el-form-item label="后端导出忽略" v-if="props.row.byServer">
 
@@ -160,12 +157,12 @@
 	.demo-table-expand {
 		padding: 5px 10px 5px 10px;
 		margin-left: 18px;
-		border-left: 1px #99a9bf dotted;
+		border-left: 1px #409EFF dotted;
 	}
 
 	.demo-table-expand label {
 		width: 100px;
-		color: #99a9bf;
+		color: #409EFF;
 	}
 
 	.demo-table-expand .el-form-item {
