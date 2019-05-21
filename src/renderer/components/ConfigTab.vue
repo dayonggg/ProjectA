@@ -29,10 +29,10 @@
 						<template slot-scope="props">
 							<el-form label-position="right" inline class="demo-table-expand">
 								<el-form-item label="前端导出忽略" v-if="props.row.byClient">
-									
+									<ignore-select :itype="!ignoreForServer" :tablename="props.row.label" :selected="props.row.clientIgnore"></ignore-select>
 								</el-form-item>
 								<el-form-item label="后端导出忽略" v-if="props.row.byServer">
-
+									<ignore-select :itype="ignoreForServer" :tablename="props.row.label" :selected="props.row.serverIgnore"></ignore-select>
 								</el-form-item>
 							</el-form>
 						</template>
@@ -59,13 +59,14 @@
 					</el-table-column>
 				</el-table>
 			</el-form-item>
-
 		</el-form>
 	</div>
 </template>
 
 <script>
 	import Bus from './Bus'
+	import table from './table.js'
+	import IgnoreSelect from './IgnoreSelect'
 
 	export default {
 		name: "config-tab",
@@ -77,13 +78,33 @@
 				modelGroups: [],
 				tables: [],
 				tagInputVisible: false,
-				groupInputValue: ''
+				groupInputValue: '',
+				ignoreForServer: true
 			}
+		},
+		components: {
+			IgnoreSelect
 		},
 		mounted() {
 			this.modelGroups = this.config.content.treeData[1].lhDir
 			this.tables = this.config.content.treeData[0].children
-			console.log(this.tables)
+			let tableList =[]
+			for(let i=0;i<this.tables.length;i++){
+				tableList.push(this.tables[i].label)
+			}
+			Bus.$on('updataIgnore', content => {
+				let t = this.tables
+				for(let i=0;i<t.length;i++){
+					if(t[i].label == content.tablename){
+						if(content.type){
+							t[i].serverIgnore = content.ignore
+						}else{
+							t[i].clientIgnore = content.ignore
+						}
+					}
+				}
+			})
+			table.init(tableList)
 		},
 		methods: {
 			tagClose(group) {
