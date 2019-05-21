@@ -22,11 +22,7 @@ export default {
 	},
 	getKey(tablename){
 		let arr=[]
-		let obj = {}
 		for(let i=0;i<this.tableDatas[tablename][0].length;i++){
-// 			obj.name = this.tableDatas[tablename][2][i]
-// 			obj.type = this.tableDatas[tablename][1][i]
-// 			obj.info = this.tableDatas[tablename][0][i]
 			arr.push(this.tableDatas[tablename][2][i])
 		}
 		return arr
