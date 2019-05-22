@@ -128,6 +128,12 @@
 				}
 				this.tagInputVisible = false
 				this.groupInputValue = ''
+			},
+			saveConfig(){
+				localStorage.setItem('tableDir',this.tableDir)
+				localStorage.setItem('resDir',this.resDir)
+				localStorage.setItem('config',this.config)
+				this.saved = true
 			}
 		},
 		watch: {
@@ -147,6 +153,15 @@
 					this.saved = false
 				}
 			},
+			saved:{
+				handler() {
+					let self = this
+					Bus.$emit('page-state', {
+						label:'设置',
+						saved:self.saved
+					})
+				}
+			}
 		}
 	}
 </script>
