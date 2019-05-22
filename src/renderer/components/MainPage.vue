@@ -155,6 +155,7 @@
 				localConfig: {},
 				saveSpaceDir: true, //是否保存工作空间地址
 				modelGroups: [], //模型类别列表
+				fl: [],
 			}
 		},
 		components: {
@@ -356,13 +357,18 @@
 				let targetRoot = this.workSpace.resDir
 				let d = fs.readFileSync(filePath)
 				let obj = JSON.parse(d.toString())
+				this.fl = []
 				this.parseJson(obj, sourceRoot)
+				this.fl = this.unique(this.fl)
 				if (fileType == '.ls') {
-					fs.writeFileSync(path.join(targetRoot, 'scene', path.basename(filePath)), JSON.stringify(obj, null, "\t"))
+					fs.writeFileSync(path.join(targetRoot, 'scene', path.basename(filePath)), this.replaceWithArr(JSON.stringify(obj,
+						null, "\t"), this.fl))
 				}
 				if (fileType == '.lh') {
-					fs.writeFileSync(path.join(targetRoot, group, path.basename(filePath)), JSON.stringify(obj, null, "\t"))
+					fs.writeFileSync(path.join(targetRoot, group, path.basename(filePath)), this.replaceWithArr(JSON.stringify(obj,
+						null, "\t"), this.fl))
 				}
+				this.configed = false
 
 			},
 			selectSceneFile() {
@@ -391,7 +397,6 @@
 			},
 			addModel() {
 				this.fileOperation(this.newModel.file, this.newModel.group)
-				this.nmDialogVisible = false
 				this.nmDialogVisible = false
 				this.$message({
 					message: '成功增加一个新模型',
@@ -426,7 +431,8 @@
 						'[object Array]') {
 						this.parseJson(ele, sourceRoot)
 					} else if (Object.prototype.toString.call(ele) === '[object String]') {
-						if (path.extname(ele) == '.png' || path.extname(ele) == '.jpg' || path.extname(ele) == '.lav') {
+						if (path.extname(ele) == '.png' || path.extname(ele) == '.jpg' || path.extname(ele) == '.lav' || path.extname(ele) ==
+							'.lm') {
 							let s = path.join(sourceRoot, ele)
 							let t = path.join(this.workSpace.resDir, "Assets/", path.basename(ele))
 							fs.readFile(s, function(err, originBuffer) {
@@ -436,19 +442,30 @@
 									}
 								});
 							})
-							ele = "Assets/" + path.basename(ele)
+							self.fl.push(ele + "@Assets/" + path.basename(ele))
+							// ele = "Assets/" + path.basename(ele)
 						}
 						if (path.extname(ele) == '.lmat') {
 							let lmatPath = path.join(sourceRoot, ele)
 							let d = fs.readFileSync(lmatPath)
 							let obj1 = JSON.parse(d.toString())
 							this.parseJson(obj1, path.dirname(lmatPath))
-							fs.writeFileSync(path.join(this.workSpace.resDir, 'Assets', path.basename(ele)), JSON.stringify(obj1, null, "\t"))
-							ele = "Assets/" + path.basename(ele)
+							fs.writeFileSync(path.join(this.workSpace.resDir, 'Assets', path.basename(ele)), self.replaceWithArr(JSON.stringify(
+								obj1, null, "\t"), self.fl))
+							self.fl.push(ele + "@Assets/" + path.basename(ele))
+							// ele = "Assets/" + path.basename(ele)
 						}
 					}
 				}
-			}
+			},
+			replaceWithArr(str, arr) {
+				for (let i = 0; i < arr.length; i++) {
+					let a = arr[i].split('@')
+					let re = new RegExp(a[0], "g")
+					str = str.replace(re, a[1])
+				}
+				return str
+			},
 		}
 	}
 </script>
