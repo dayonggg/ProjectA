@@ -2,7 +2,7 @@
 	<el-container class="main-page" v-loading.fullscreen.lock="fullscreenLoading" element-loading-text="加载中"
 	 element-loading-background="rgba(0, 0, 0, 0.5)">
 		<el-header height="50px">
-			<div class="title">Game Resource Designer</div>
+			<div class="title"></div>
 			<div class="main-menu-panel">
 				<el-button-group class="main-menu-addgroup">
 					<el-button icon="el-icon-picture-outline" size="mini" @click="openNS" :disabled="configed"></el-button>
@@ -163,10 +163,10 @@
 			TabsPage
 		},
 		mounted() {
-			this.workSpace.tableDir = localStorage.getItem('tableDir')
-			this.workSpace.resDir = localStorage.getItem('resDir')
+			this.workSpace.tableDir = localStorage.getItem('tableDir') || ''
+			this.workSpace.resDir = localStorage.getItem('resDir') || ''
 
-			if (this.workSpace.tableDir == null || this.workSpace.resDir == null) {
+			if (this.workSpace.tableDir == '' || this.workSpace.resDir == '') {
 				this.wsDialogVisible = true
 			} else {
 				this.initProjConfig()
@@ -193,8 +193,8 @@
 				this.treeVisible = !this.treeVisible
 			},
 			initProjConfig() {
-				let strConfig = localStorage.getItem('config')
-				if (strConfig != null) {
+				let strConfig = localStorage.getItem('config') || ''
+				if (strConfig != '') {
 					this.localConfig = JSON.parse(strConfig)
 				} else {
 					let cfg = {
@@ -300,7 +300,7 @@
 			dialogWSClose(done) {
 				this.$confirm('未设置工作路径无法使用，你确定要退出应用吗？')
 					.then(_ => {
-						this.dialogCancel()
+						ipc.ipcRenderer.send('close-win')
 						done()
 					})
 					.catch(_ => {})
