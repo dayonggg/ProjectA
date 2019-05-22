@@ -286,11 +286,9 @@
 							children: modelChildren
 						})
 					}
-					console.log(cfg)
 					localStorage.setItem('config', JSON.stringify(cfg))
 					this.localConfig = cfg
 				}
-
 			},
 			setProjConfig() {
 				if (!this.configed) {
@@ -339,8 +337,11 @@
 				});
 			},
 			addWS() {
-				this.wsDialogVisible = false
+				this.initProjConfig()
+				this.modelGroups = this.localConfig.content.treeData[1].lhDir
+				Bus.$emit('updataTree', this.localConfig.content.treeData)
 				this.configed = false
+				this.wsDialogVisible = false
 			},
 			openNS() {
 				this.configed = true
