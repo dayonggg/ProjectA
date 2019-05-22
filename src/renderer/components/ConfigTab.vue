@@ -79,7 +79,8 @@
 				tables: [],
 				tagInputVisible: false,
 				groupInputValue: '',
-				ignoreForServer: true
+				ignoreForServer: true,
+				saved: true
 			}
 		},
 		components: {
@@ -88,17 +89,17 @@
 		mounted() {
 			this.modelGroups = this.config.content.treeData[1].lhDir
 			this.tables = this.config.content.treeData[0].children
-			let tableList =[]
-			for(let i=0;i<this.tables.length;i++){
+			let tableList = []
+			for (let i = 0; i < this.tables.length; i++) {
 				tableList.push(this.tables[i].label)
 			}
 			Bus.$on('updataIgnore', content => {
 				let t = this.tables
-				for(let i=0;i<t.length;i++){
-					if(t[i].label == content.tablename){
-						if(content.type){
+				for (let i = 0; i < t.length; i++) {
+					if (t[i].label == content.tablename) {
+						if (content.type) {
 							t[i].serverIgnore = content.ignore
-						}else{
+						} else {
 							t[i].clientIgnore = content.ignore
 						}
 					}
@@ -128,6 +129,24 @@
 				this.tagInputVisible = false
 				this.groupInputValue = ''
 			}
+		},
+		watch: {
+			config: {
+				handler() {
+					this.saved = false
+				},
+				deep: true
+			},
+			tableDir: {
+				handler() {
+					this.saved = false
+				}
+			},
+			resDir: {
+				handler() {
+					this.saved = false
+				}
+			},
 		}
 	}
 </script>
