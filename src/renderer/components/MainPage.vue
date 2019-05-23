@@ -469,9 +469,10 @@
 							let d = fs.readFileSync(lmatPath)
 							let obj1 = JSON.parse(d.toString())
 							this.parseJson(obj1, path.dirname(lmatPath))
-							fs.writeFileSync(path.join(this.workSpace.resDir, 'Assets', path.basename(ele)), self.replaceWithArr(JSON.stringify(
-								obj1, null, "\t"), self.fl))
 							self.fl.push(ele + "@Assets/" + path.basename(ele))
+							fs.writeFileSync(path.join(this.workSpace.resDir, 'Assets', path.basename(ele)), self.replaceWithArr(JSON.stringify(
+								obj1, null, "\t"), this.unique(this.fl)))
+							
 							// ele = "Assets/" + path.basename(ele)
 						}
 					}
