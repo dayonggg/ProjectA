@@ -169,10 +169,18 @@
 			if (this.workSpace.tableDir == '' || this.workSpace.resDir == '') {
 				this.wsDialogVisible = true
 			} else {
-				this.initProjConfig()
-				this.modelGroups = this.localConfig.content.treeData[1].lhDir
-				Bus.$emit('updataTree', this.localConfig.content.treeData)
-				this.configed = false
+				try {
+					fs.statSync(path.join(this.workSpace.resDir, 'Assets')).isDirectory()
+					this.initProjConfig()
+					this.modelGroups = this.localConfig.content.treeData[1].lhDir
+					Bus.$emit('updataTree', this.localConfig.content.treeData)
+					this.configed = false
+				} catch (e) {
+					this.workSpace.resDir = ''
+					this.workSpace.tableDir = ''
+					this.wsDialogVisible = true
+					this.$message.error('资源路径错误，重新选择')
+				}
 			}
 
 			this.fullscreenLoading = false
@@ -337,11 +345,21 @@
 				});
 			},
 			addWS() {
-				this.initProjConfig()
-				this.modelGroups = this.localConfig.content.treeData[1].lhDir
-				Bus.$emit('updataTree', this.localConfig.content.treeData)
-				this.configed = false
-				this.wsDialogVisible = false
+				try {
+					fs.statSync(path.join(this.workSpace.resDir, 'Assets')).isDirectory()
+					this.initProjConfig()
+					this.modelGroups = this.localConfig.content.treeData[1].lhDir
+					Bus.$emit('updataTree', this.localConfig.content.treeData)
+					this.configed = false
+					this.wsDialogVisible = false
+				} catch (e) {
+					this.workSpace.resDir = ''
+					this.$message.error('资源路径错误，重新选择')
+				}
+				
+				
+				
+				
 			},
 			openNS() {
 				this.configed = true
