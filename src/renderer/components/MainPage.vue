@@ -4,9 +4,16 @@
 		<el-header height="50px">
 			<div class="title"></div>
 			<div class="main-menu-panel">
+				<!-- 保存、全部保存、发布 -->
 				<el-button-group class="main-menu-addgroup">
-					<el-button icon="el-icon-picture-outline" size="mini" @click="openNS" :disabled="configed"></el-button>
-					<el-button icon="el-icon-menu" size="mini" @click="openNM" :disabled="configed"></el-button>
+					<el-button icon="iconfont gd-iconsave" @click="openNS" :disabled="configed"></el-button>
+					<el-button icon="iconfont gd-iconcontentsaveall" @click="openNM" :disabled="configed"></el-button>
+					<el-button icon="iconfont gd-iconpublish" @click="openNM" :disabled="configed"></el-button>
+				</el-button-group>
+				<!-- 添加场景、模型 -->
+				<el-button-group class="main-menu-addgroup">
+					<el-button icon="iconfont gd-iconeditor-preview" @click="openNS" :disabled="configed"></el-button>
+					<el-button icon="iconfont gd-iconreview-spell" @click="openNM" :disabled="configed"></el-button>
 				</el-button-group>
 			</div>
 		</el-header>
@@ -525,7 +532,7 @@
 	}
 
 	.title {
-		height: 25px;
+		height: 20px;
 		width: 100%;
 		line-height: 25px;
 		text-align: center;
@@ -533,8 +540,8 @@
 	}
 
 	.main-menu-panel {
-		height: 25px;
-		line-height: 20px;
+		height: 30px;
+		line-height: 30px;
 		width: 100%;
 		text-align: left;
 	}
