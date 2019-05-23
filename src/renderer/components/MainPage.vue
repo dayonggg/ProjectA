@@ -1,8 +1,8 @@
 <template>
 	<el-container class="main-page" v-loading.fullscreen.lock="fullscreenLoading" element-loading-text="加载中"
 	 element-loading-background="rgba(0, 0, 0, 0.5)">
-		<el-header height="50px">
-			<div class="title"></div>
+		<el-header height="30px">
+			<!-- <div class="title"></div> -->
 			<div class="main-menu-panel">
 				<!-- 保存、全部保存、发布 -->
 				<el-button-group class="main-menu-addgroup">
@@ -33,7 +33,7 @@
 				</el-container>
 			</el-aside>
 			<el-main>
-				<tabs-page></tabs-page>
+				<tabs-page ref="tabspage"></tabs-page>
 			</el-main>
 		</el-container>
 		<!--         Dialog          -->
@@ -555,7 +555,7 @@
 	}
 
 	.main-page>.el-container {
-		height: calc(100%-60px);
+		height: calc(100%-30px) !important;
 	}
 
 	.main-page>.el-header {
