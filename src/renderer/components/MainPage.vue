@@ -319,7 +319,7 @@
 					.catch(_ => {})
 			},
 			dialogCancel() {
-				this.newModel ={
+				this.newModel = {
 					name: "",
 					file: "",
 					icon: "",
@@ -374,24 +374,29 @@
 				this.nmDialogVisible = true
 			},
 			fileOperation(fileObj, group) {
-				let filePath = path.join(fileObj)
-				let fileType = path.extname(fileObj)
-				let sourceRoot = path.dirname(filePath)
-				let targetRoot = this.workSpace.resDir
-				let d = fs.readFileSync(filePath)
-				let obj = JSON.parse(d.toString())
-				this.fl = []
-				this.parseJson(obj, sourceRoot)
-				this.fl = this.unique(this.fl)
-				if (fileType == '.ls') {
-					fs.writeFileSync(path.join(targetRoot, 'scene', path.basename(filePath)), this.replaceWithArr(JSON.stringify(obj,
-						null, "\t"), this.fl))
+				try {
+					fs.statSync(path.join(this.workSpace.resDir, group)).isDirectory()
+					let filePath = path.join(fileObj)
+					let fileType = path.extname(fileObj)
+					let sourceRoot = path.dirname(filePath)
+					let targetRoot = this.workSpace.resDir
+					let d = fs.readFileSync(filePath)
+					let obj = JSON.parse(d.toString())
+					this.fl = []
+					this.parseJson(obj, sourceRoot)
+					if (fileType == '.ls') {
+						fs.writeFileSync(path.join(targetRoot, 'scene', path.basename(filePath)), this.replaceWithArr(JSON.stringify(obj,
+							null, "\t"), this.unique(this.fl)))
+					}
+					if (fileType == '.lh') {
+						fs.writeFileSync(path.join(targetRoot, group, path.basename(filePath)), this.replaceWithArr(JSON.stringify(obj,
+							null, "\t"), this.unique(this.fl)))
+					}
+					this.configed = false
+				} catch (e) {
+					this.$message.error('未找到 ' + group + ' 目录')
 				}
-				if (fileType == '.lh') {
-					fs.writeFileSync(path.join(targetRoot, group, path.basename(filePath)), this.replaceWithArr(JSON.stringify(obj,
-						null, "\t"), this.fl))
-				}
-				this.configed = false
+
 			},
 			selectSceneFile() {
 				let self = this
@@ -465,7 +470,8 @@
 						'[object Array]') {
 						this.parseJson(ele, sourceRoot)
 					} else if (Object.prototype.toString.call(ele) === '[object String]') {
-						if (path.extname(ele) == '.png' || path.extname(ele) == '.jpg' || path.extname(ele) == '.lav' || path.extname(ele) ==
+						if (path.extname(ele) == '.png' || path.extname(ele) == '.jpg' || path.extname(ele) == '.lav' || path.extname(
+								ele) ==
 							'.lm') {
 							let s = path.join(sourceRoot, ele)
 							let t = path.join(this.workSpace.resDir, "Assets/", path.basename(ele))
