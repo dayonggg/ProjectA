@@ -24,7 +24,6 @@
 						<i class="el-icon-setting" @click="setProjConfig"></i>
 					</el-footer>
 				</el-container>
-
 			</el-aside>
 			<el-main>
 				<tabs-page></tabs-page>
@@ -106,7 +105,6 @@
 						<i v-else class="el-icon-plus avatar-uploader-icon"></i>
 					</div>
 				</el-form-item>
-
 			</el-form>
 			<span slot="footer" class="dialog-footer">
 				<el-button @click="dialogCancel">取 消</el-button>
@@ -321,7 +319,17 @@
 					.catch(_ => {})
 			},
 			dialogCancel() {
-				this.newModel = this.newScene = {}
+				this.newModel ={
+					name: "",
+					file: "",
+					icon: "",
+					group: ""
+				}
+				this.newScene = {
+					name: "",
+					file: "",
+					png: ""
+				}
 				this.workSpace.tableDir = localStorage.getItem('tableDir') || ''
 				this.workSpace.resDir = localStorage.getItem('resDir') || ''
 				this.wsDialogVisible = this.nsDialogVisible = this.nmDialogVisible = false
@@ -356,10 +364,6 @@
 					this.workSpace.resDir = ''
 					this.$message.error('资源路径错误，重新选择')
 				}
-				
-				
-				
-				
 			},
 			openNS() {
 				this.configed = true
@@ -388,7 +392,6 @@
 						null, "\t"), this.fl))
 				}
 				this.configed = false
-
 			},
 			selectSceneFile() {
 				let self = this
@@ -408,7 +411,12 @@
 				this.fileOperation(this.newScene.file)
 				//Todo Edit Table & png
 				this.nsDialogVisible = false
-				this.newScene = {}
+				this.newScene = {
+					name: "",
+					file: "",
+					png: ""
+				}
+				Bus.$emit('updataTree', this.localConfig.content.treeData)
 				this.$message({
 					message: '成功增加一个新场景',
 					type: 'success'
@@ -417,6 +425,13 @@
 			addModel() {
 				this.fileOperation(this.newModel.file, this.newModel.group)
 				this.nmDialogVisible = false
+				this.newModel = {
+					name: "",
+					file: "",
+					icon: "",
+					group: ""
+				}
+				Bus.$emit('updataTree', this.localConfig.content.treeData)
 				this.$message({
 					message: '成功增加一个新模型',
 					type: 'success'
@@ -472,7 +487,7 @@
 							self.fl.push(ele + "@Assets/" + path.basename(ele))
 							fs.writeFileSync(path.join(this.workSpace.resDir, 'Assets', path.basename(ele)), self.replaceWithArr(JSON.stringify(
 								obj1, null, "\t"), this.unique(this.fl)))
-							
+
 							// ele = "Assets/" + path.basename(ele)
 						}
 					}
