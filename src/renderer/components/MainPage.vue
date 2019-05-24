@@ -137,9 +137,9 @@
 			return {
 				fullscreenLoading: true,
 				configed: true,
-				saveBtnDisable:true,	//保存按钮是否不可用
-				saveAllBtnDisable:true,	//全部保存按钮是否不可用
-				publishBtnDisable:true,	//发布按钮是否不可用
+				saveBtnDisable: true, //保存按钮是否不可用
+				saveAllBtnDisable: true, //全部保存按钮是否不可用
+				publishBtnDisable: true, //发布按钮是否不可用
 				treeVisible: true, //是否展开文件列表
 				wsDialogVisible: false, //是否显示工作空间对话框
 				nsDialogVisible: false, //是否显示新建场景对话框
@@ -164,7 +164,7 @@
 				saveSpaceDir: true, //是否保存工作空间地址
 				modelGroups: [], //模型类别列表
 				fl: [],
-				tabState:{}
+				tabState: {}
 			}
 		},
 		components: {
@@ -178,21 +178,23 @@
 			if (this.workSpace.tableDir == '' || this.workSpace.resDir == '') {
 				this.wsDialogVisible = true
 			} else {
-				try {
-					fs.statSync(path.join(this.workSpace.resDir, 'Assets')).isDirectory()
-					this.initProjConfig()
-					this.modelGroups = this.localConfig.content.treeData[1].lhDir
-					Bus.$emit('updataTree', this.localConfig.content.treeData)
-					this.configed = false
-				} catch (e) {
-					this.workSpace.resDir = ''
-					this.workSpace.tableDir = ''
-					this.wsDialogVisible = true
-					this.$message.error('资源路径错误，重新选择')
-				}
+				fs.exists(path.join(this.workSpace.resDir, 'Assets'), e => {
+					if (e) {
+						this.initProjConfig()
+						this.modelGroups = this.localConfig.content.treeData[1].lhDir
+						Bus.$emit('updataTree', this.localConfig.content.treeData)
+						this.configed = false
+					}
+					if (!e) {
+						this.workSpace.resDir = ''
+						this.workSpace.tableDir = ''
+						this.wsDialogVisible = true
+						this.$message.error('资源路径错误，重新选择')
+					}
+				})
 			}
 			// this.tabState= this.$refs.tabspage.$data
-			this.$set(this.$data,'tabState',this.$refs.tabspage.$data)
+			this.$set(this.$data, 'tabState', this.$refs.tabspage.$data)
 			this.fullscreenLoading = false
 		},
 		methods: {
@@ -208,6 +210,7 @@
 					$('.main-left-ctrl i').removeClass('el-icon-arrow-right')
 					$('.main-left-ctrl i').addClass('el-icon-arrow-left')
 				}
+				Bus.$emit('resize', {})
 				this.treeVisible = !this.treeVisible
 			},
 			initProjConfig() {
@@ -275,7 +278,8 @@
 						if (en == '.ls') {
 							let resObj = {
 								label: localscene[i],
-								fileType: en
+								fileType: en,
+								path: restree.lsDir
 							}
 							sceneChildren.push(resObj)
 						}
@@ -294,7 +298,8 @@
 							if (en == '.lh') {
 								let resObj = {
 									label: localmodel[j],
-									fileType: en
+									fileType: en,
+									path: restree.lhDir[i]
 								}
 								modelChildren.push(resObj)
 							}
@@ -306,6 +311,7 @@
 					}
 					localStorage.setItem('config', JSON.stringify(cfg))
 					this.localConfig = cfg
+					// console.log(this.localConfig)
 				}
 			},
 			setProjConfig() {
@@ -365,17 +371,19 @@
 				});
 			},
 			addWS() {
-				try {
-					fs.statSync(path.join(this.workSpace.resDir, 'Assets')).isDirectory()
-					this.initProjConfig()
-					this.modelGroups = this.localConfig.content.treeData[1].lhDir
-					Bus.$emit('updataTree', this.localConfig.content.treeData)
-					this.configed = false
-					this.wsDialogVisible = false
-				} catch (e) {
-					this.workSpace.resDir = ''
-					this.$message.error('资源路径错误，重新选择')
-				}
+				fs.exists(path.join(this.workSpace.resDir, 'Assets'), e => {
+					if (e) {
+						this.initProjConfig()
+						self.modelGroups = this.localConfig.content.treeData[1].lhDir
+						Bus.$emit('updataTree', this.localConfig.content.treeData)
+						this.configed = false
+						this.wsDialogVisible = false
+					}
+					if (!e) {
+						this.workSpace.resDir = ''
+						this.$message.error('资源路径错误，重新选择')
+					}
+				})
 			},
 			openNS() {
 				this.configed = true
@@ -386,29 +394,31 @@
 				this.nmDialogVisible = true
 			},
 			fileOperation(fileObj, group) {
-				try {
-					fs.statSync(path.join(this.workSpace.resDir, group)).isDirectory()
-					let filePath = path.join(fileObj)
-					let fileType = path.extname(fileObj)
-					let sourceRoot = path.dirname(filePath)
-					let targetRoot = this.workSpace.resDir
-					let d = fs.readFileSync(filePath)
-					let obj = JSON.parse(d.toString())
-					this.fl = []
-					this.parseJson(obj, sourceRoot)
-					if (fileType == '.ls') {
-						fs.writeFileSync(path.join(targetRoot, 'scene', path.basename(filePath)), this.replaceWithArr(JSON.stringify(obj,
-							null, "\t"), this.unique(this.fl)))
+				fs.exists(path.join(this.workSpace.resDir, 'Assets'), e=> {
+					if (e) {
+						let filePath = path.join(fileObj)
+						let fileType = path.extname(fileObj)
+						let sourceRoot = path.dirname(filePath)
+						let targetRoot = this.workSpace.resDir
+						let d = fs.readFileSync(filePath)
+						let obj = JSON.parse(d.toString())
+						this.fl = []
+						this.parseJson(obj, sourceRoot)
+						if (fileType == '.ls') {
+							fs.writeFileSync(path.join(targetRoot, 'scene', path.basename(filePath)), this.replaceWithArr(JSON.stringify(
+								obj,
+								null, "\t"), this.unique(this.fl)))
+						}
+						if (fileType == '.lh') {
+							fs.writeFileSync(path.join(targetRoot, group, path.basename(filePath)), this.replaceWithArr(JSON.stringify(obj,
+								null, "\t"), this.unique(this.fl)))
+						}
+						this.configed = false
 					}
-					if (fileType == '.lh') {
-						fs.writeFileSync(path.join(targetRoot, group, path.basename(filePath)), this.replaceWithArr(JSON.stringify(obj,
-							null, "\t"), this.unique(this.fl)))
+					if (!e) {
+						this.$message.error('未找到 ' + group + ' 目录')
 					}
-					this.configed = false
-				} catch (e) {
-					this.$message.error('未找到 ' + group + ' 目录')
-				}
-
+				})
 			},
 			selectSceneFile() {
 				let self = this
@@ -515,25 +525,25 @@
 				}
 				return str
 			},
-			saveTab(){
+			saveTab() {
 				console.log(this.tabState)
 			},
-			saveAllTab(){
-				
+			saveAllTab() {
+
 			},
-			publish(){
-				
+			publish() {
+
 			}
 		},
-		watch:{
-			tabState:{
-				handler(old,newValue) {
+		watch: {
+			tabState: {
+				handler(old, newValue) {
 					this.saveAllBtnDisable = true
 					this.saveBtnDisable = true
-					if(newValue.unSavedTabs.length>0){
+					if (newValue.unSavedTabs.length > 0) {
 						this.saveAllBtnDisable = false
-						for(let i=0;i<newValue.unSavedTabs.length;i++){
-							if(newValue.unSavedTabs[i] == newValue.editableTabsValue){
+						for (let i = 0; i < newValue.unSavedTabs.length; i++) {
+							if (newValue.unSavedTabs[i] == newValue.editableTabsValue) {
 								this.saveBtnDisable = false
 							}
 						}
@@ -643,6 +653,13 @@
 	.main-page>.el-container>.el-main>.el-tabs>.el-tabs__content {
 		/* background-color: #232424; */
 		border: 0px;
+	}
+
+	.main-page>.el-container>.el-main>.el-tabs>.el-tabs__content {
+
+		padding: 5px;
+		height: calc(100% - 50px);
+		overflow: auto;
 	}
 
 	.main-page>.el-container>.el-main>.el-tabs {

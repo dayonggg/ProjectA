@@ -4,6 +4,7 @@
 			<span slot="label"><i v-show="!item.saved">*</i>{{item.label}}</span>
 			<table-tab v-if="item.fileType == 'xlsx'" :id="item.label" :table="item"></table-tab>
 			<config-tab v-if="item.fileType == 'conf'" :id="item.label"></config-tab>
+			<editor-tab v-if="item.fileType == '.ls'" :id="item.label" :json="item"></editor-tab>
 		</el-tab-pane>
 	</el-tabs>
 </template>
@@ -12,6 +13,7 @@
 	import Bus from './Bus'
 	import TableTab from './TableTab'
 	import ConfigTab from './ConfigTab'
+	import EditorTab from './EditorTab'
 
 	export default {
 		name: "tabs-page",
@@ -25,7 +27,8 @@
 		},
 		components: {
 			TableTab,
-			ConfigTab
+			ConfigTab,
+			EditorTab
 		},
 		mounted() {
 			Bus.$on('addTab', content => {
@@ -119,5 +122,9 @@
 		height: 32px !important;
 		line-height: 32px !important;
 		font-size: 12px !important;
+	}
+	.el-tab-pane{
+		height: 100%;
+		width: 100%;
 	}
 </style>

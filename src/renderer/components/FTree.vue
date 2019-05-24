@@ -29,11 +29,10 @@
 		},
 		methods: {
 			nodeClick(data) {
-				if (data.fileType == "xlsx" && data.disabled == false) {
+				if (data.fileType == "xlsx" || data.fileType == '.ls' || data.fileType == '.lh' || data.fileType == '.lmat') {
 					Bus.$emit('addTab', data)
 				}
 			},
-
 		}
 	};
 </script>
@@ -48,12 +47,12 @@
 		overflow: hidden;
 		color: #000 !important;
 	}
-	
-	.el-tree:hover{
-		overflow:auto
+
+	.el-tree:hover {
+		overflow: auto
 	}
-	
-	.el-tree-node__content{
+
+	.el-tree-node__content {
 		height: 22px !important;
 	}
 
@@ -70,7 +69,8 @@
 	.el-tree-node:hover>.el-tree-node__content {
 		/* background-color: #373b3a; */
 	}
-	.disabled{
+
+	.disabled {
 		color: red;
 	}
 </style>
