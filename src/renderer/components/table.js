@@ -12,7 +12,7 @@ export default {
 		for(let i=0;i<tableList.length;i++){
 			this.tableDatas[tableList[i]] = this.setExcelData(tableList[i])
 		}
-		console.log(this.tableDatas)
+		// console.log(this.tableDatas)
 	},
 	setExcelData(table) {
 		let list = xlsx.parse(path.join(this.tableDir, table))

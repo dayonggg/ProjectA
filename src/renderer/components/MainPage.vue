@@ -6,9 +6,9 @@
 			<div class="main-menu-panel">
 				<!-- 保存、全部保存、发布 -->
 				<el-button-group class="main-menu-addgroup">
-					<el-button icon="iconfont gd-iconsave" @click="openNS" :disabled="configed"></el-button>
-					<el-button icon="iconfont gd-iconcontentsaveall" @click="openNM" :disabled="configed"></el-button>
-					<el-button icon="iconfont gd-iconpublish" @click="openNM" :disabled="configed"></el-button>
+					<el-button icon="iconfont gd-iconsave" @click="saveTab" :disabled="saveBtnDisable"></el-button>
+					<el-button icon="iconfont gd-iconcontentsaveall" @click="saveAllTab" :disabled="saveAllBtnDisable"></el-button>
+					<el-button icon="iconfont gd-iconpublish" @click="publish" :disabled="publishBtnDisable"></el-button>
 				</el-button-group>
 				<!-- 添加场景、模型 -->
 				<el-button-group class="main-menu-addgroup">
@@ -137,6 +137,9 @@
 			return {
 				fullscreenLoading: true,
 				configed: true,
+				saveBtnDisable:true,	//保存按钮是否不可用
+				saveAllBtnDisable:true,	//全部保存按钮是否不可用
+				publishBtnDisable:true,	//发布按钮是否不可用
 				treeVisible: true, //是否展开文件列表
 				wsDialogVisible: false, //是否显示工作空间对话框
 				nsDialogVisible: false, //是否显示新建场景对话框
@@ -161,6 +164,7 @@
 				saveSpaceDir: true, //是否保存工作空间地址
 				modelGroups: [], //模型类别列表
 				fl: [],
+				tabState:{}
 			}
 		},
 		components: {
@@ -187,7 +191,8 @@
 					this.$message.error('资源路径错误，重新选择')
 				}
 			}
-
+			// this.tabState= this.$refs.tabspage.$data
+			this.$set(this.$data,'tabState',this.$refs.tabspage.$data)
 			this.fullscreenLoading = false
 		},
 		methods: {
@@ -454,7 +459,6 @@
 				ipc.ipcRenderer.send('open-model-ico', '选择模型图标')
 				ipc.ipcRenderer.on('selected-model-ico', (e, dir) => {
 					self.newModel.icon = dir.toString()
-					console.log(self.newModel.icon)
 				})
 			},
 			unique(arr) {
@@ -490,7 +494,6 @@
 								});
 							})
 							self.fl.push(ele + "@Assets/" + path.basename(ele))
-							// ele = "Assets/" + path.basename(ele)
 						}
 						if (path.extname(ele) == '.lmat') {
 							let lmatPath = path.join(sourceRoot, ele)
@@ -500,8 +503,6 @@
 							self.fl.push(ele + "@Assets/" + path.basename(ele))
 							fs.writeFileSync(path.join(this.workSpace.resDir, 'Assets', path.basename(ele)), self.replaceWithArr(JSON.stringify(
 								obj1, null, "\t"), this.unique(this.fl)))
-
-							// ele = "Assets/" + path.basename(ele)
 						}
 					}
 				}
@@ -514,6 +515,32 @@
 				}
 				return str
 			},
+			saveTab(){
+				console.log(this.tabState)
+			},
+			saveAllTab(){
+				
+			},
+			publish(){
+				
+			}
+		},
+		watch:{
+			tabState:{
+				handler(old,newValue) {
+					this.saveAllBtnDisable = true
+					this.saveBtnDisable = true
+					if(newValue.unSavedTabs.length>0){
+						this.saveAllBtnDisable = false
+						for(let i=0;i<newValue.unSavedTabs.length;i++){
+							if(newValue.unSavedTabs[i] == newValue.editableTabsValue){
+								this.saveBtnDisable = false
+							}
+						}
+					}
+				},
+				deep: true
+			}
 		}
 	}
 </script>
