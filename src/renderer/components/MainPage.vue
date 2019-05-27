@@ -537,7 +537,7 @@
 		},
 		watch: {
 			tabState: {
-				handler(old, newValue) {
+				handler(newValue) {
 					this.saveAllBtnDisable = true
 					this.saveBtnDisable = true
 					if (newValue.unSavedTabs.length > 0) {
