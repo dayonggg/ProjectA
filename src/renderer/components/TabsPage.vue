@@ -4,7 +4,8 @@
 			<span slot="label"><i v-show="!item.saved">*</i>{{item.label}}</span>
 			<table-tab v-if="item.fileType == 'xlsx'" :id="item.label" :table="item"></table-tab>
 			<config-tab v-if="item.fileType == 'conf'" :id="item.label"></config-tab>
-			<editor-tab v-if="item.fileType == '.ls'" :id="item.label" :json="item"></editor-tab>
+			<editor-tab v-if="item.fileType == '.ls' || item.fileType == '.lh' || item.fileType == '.lmat'" :id="item.label"
+			 :json="item"></editor-tab>
 		</el-tab-pane>
 	</el-tabs>
 </template>
@@ -57,13 +58,13 @@
 			})
 		},
 		methods: {
-			setSaved(){
-				for(let i=0;i<this.editableTabs.length;i++){
+			setSaved() {
+				for (let i = 0; i < this.editableTabs.length; i++) {
 					this.editableTabs[i].saved = true
-					for(let j=0;j<this.unSavedTabs.length;j++){
-						if(this.editableTabs[i].label == this.unSavedTabs[j]){
+					for (let j = 0; j < this.unSavedTabs.length; j++) {
+						if (this.editableTabs[i].label == this.unSavedTabs[j]) {
 							this.editableTabs[i].saved = false
-							this.$set(this.editableTabs,i, this.editableTabs[i])
+							this.$set(this.editableTabs, i, this.editableTabs[i])
 						}
 					}
 				}
@@ -99,10 +100,10 @@
 					})
 				}
 				this.editableTabsValue = activeName
-				if(close){
+				if (close) {
 					this.editableTabs = tabs.filter(tab => tab.label !== targetName)
 					this.unSavedTabs = this.unSavedTabs.filter(item => item != targetName)
-				}else{
+				} else {
 					this.$confirm('修改未保存，确认要放弃保存修改的内容吗？')
 						.then(_ => {
 							this.editableTabs = tabs.filter(tab => tab.label !== targetName)
@@ -111,7 +112,7 @@
 						})
 						.catch(_ => {})
 				}
-				
+
 			},
 
 		}
@@ -125,7 +126,8 @@
 		line-height: 32px !important;
 		font-size: 12px !important;
 	}
-	.el-tab-pane{
+
+	.el-tab-pane {
 		height: 100%;
 		width: 100%;
 	}
