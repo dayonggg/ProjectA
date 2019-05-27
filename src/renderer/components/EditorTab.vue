@@ -14,9 +14,11 @@
 			return {
 				editor: {},
 				code: '',
+				fcode:'',
 				width: '600',
 				height: '400',
 				filePath: '',
+				saved: true
 			}
 		},
 		props: {
@@ -32,13 +34,14 @@
 			Bus.$on('resize', content => {
 				this.updateSize()
 			})
-			this.filePath = path.join(localStorage.getItem('resDir'), this.json.path,this.json.label)
+			this.filePath = path.join(localStorage.getItem('resDir'), this.json.path, this.json.label)
 			fs.exists(this.filePath, e => {
 				if (e) {
-					this.code = JSON.stringify(JSON.parse(fs.readFileSync(this.filePath).toString()),null, "\t")	
+					this.code = JSON.stringify(JSON.parse(fs.readFileSync(this.filePath).toString()), null, "\t")
+					this.fcode = JSON.stringify(JSON.parse(fs.readFileSync(this.filePath).toString()), null, "\t")
 				}
 				if (!e) {
-					console.log('no')
+					console.log('no file')
 				}
 			})
 		},
@@ -52,6 +55,24 @@
 			updateSize() {
 				this.$set(this.$data, 'width', $(this.$el).parent().width())
 				this.$set(this.$data, 'height', $(this.$el).parent().height())
+			}
+		},
+		watch: {
+			code: {
+				handler(nv) {
+					if (nv != this.fcode) {
+						this.saved = false
+					}
+				}
+			},
+			saved: {
+				handler() {
+					let self = this
+					Bus.$emit('page-state', {
+						label: self.$el.id,
+						saved: self.saved
+					})
+				}
 			}
 		}
 	}
