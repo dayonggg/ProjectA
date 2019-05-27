@@ -135,6 +135,7 @@
 		name: "main-page",
 		data() {
 			return {
+				version:'0.0.2',
 				fullscreenLoading: true,
 				configed: true,
 				saveBtnDisable: true, //保存按钮是否不可用
@@ -172,6 +173,12 @@
 			TabsPage
 		},
 		mounted() {
+			if(this.version != localStorage.getItem('version')){
+				localStorage.clear()
+				localStorage.setItem('version',this.version)
+			}
+			
+			
 			this.workSpace.tableDir = localStorage.getItem('tableDir') || ''
 			this.workSpace.resDir = localStorage.getItem('resDir') || ''
 
