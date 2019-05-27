@@ -135,7 +135,7 @@
 		name: "main-page",
 		data() {
 			return {
-				version: '0.0.2',
+				version: '0.0.3',
 				fullscreenLoading: true,
 				configed: true,
 				saveBtnDisable: true, //保存按钮是否不可用
