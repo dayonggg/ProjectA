@@ -135,7 +135,7 @@
 		name: "main-page",
 		data() {
 			return {
-				version:'0.0.2',
+				version: '0.0.2',
 				fullscreenLoading: true,
 				configed: true,
 				saveBtnDisable: true, //保存按钮是否不可用
@@ -162,6 +162,7 @@
 				},
 				listConfigDir: "", //项目配置文件
 				localConfig: {},
+				config: {},
 				saveSpaceDir: true, //是否保存工作空间地址
 				modelGroups: [], //模型类别列表
 				fl: [],
@@ -173,12 +174,12 @@
 			TabsPage
 		},
 		mounted() {
-			if(this.version != localStorage.getItem('version')){
+			if (this.version != localStorage.getItem('version')) {
 				localStorage.clear()
-				localStorage.setItem('version',this.version)
+				localStorage.setItem('version', this.version)
 			}
-			
-			
+
+
 			this.workSpace.tableDir = localStorage.getItem('tableDir') || ''
 			this.workSpace.resDir = localStorage.getItem('resDir') || ''
 
@@ -223,9 +224,9 @@
 			initProjConfig() {
 				let strConfig = localStorage.getItem('config') || ''
 				if (strConfig != '') {
-					this.localConfig = JSON.parse(strConfig)
+					this.config = JSON.parse(strConfig)
 				} else {
-					let cfg = {
+					let o = {
 						label: '设置',
 						fileType: 'conf',
 						content: {
@@ -241,86 +242,90 @@
 							}]
 						}
 					}
-					// 表格文件列表
-					let tablelist = fs.readdirSync(this.workSpace.tableDir)
-					for (let i = 0; i < tablelist.length; i++) {
-						if (path.extname(tablelist[i]) == '.xlsx') {
-							let tableObj = {
-								label: tablelist[i],
-								fileType: 'xlsx',
-								byServer: true,
-								byClient: true,
-								serverIgnore: ['mark'],
-								clientIgnore: ['mark'],
-								disabled: false
-							}
-							cfg.content.treeData[0].children.push(tableObj)
-						}
-					}
-
-					let restree = cfg.content.treeData[1]
-
-					// 资源文件列表
-					let resChildren = []
-					let localres = fs.readdirSync(path.join(this.workSpace.resDir, restree.resDir))
-					for (let i = 0; i < localres.length; i++) {
-						let en = path.extname(localres[i])
-						if (en == '.png' || en == '.jpg' || en == '.lav' || en == '.lmat') {
-							let resObj = {
-								label: localres[i],
-								fileType: en,
-								path:restree.resDir
-							}
-							resChildren.push(resObj)
-						}
-					}
-					restree.children.push({
-						label: restree.resDir,
-						children: resChildren
-					})
-					//场景文件列表
-					let sceneChildren = []
-					let localscene = fs.readdirSync(path.join(this.workSpace.resDir, restree.lsDir))
-					for (let i = 0; i < localscene.length; i++) {
-						let en = path.extname(localscene[i])
-						if (en == '.ls') {
-							let resObj = {
-								label: localscene[i],
-								fileType: en,
-								path: restree.lsDir
-							}
-							sceneChildren.push(resObj)
-						}
-					}
-					restree.children.push({
-						label: restree.lsDir,
-						children: sceneChildren
-					})
-					//模型文件列表
-
-					for (let i = 0; i < restree.lhDir.length; i++) {
-						let modelChildren = []
-						let localmodel = fs.readdirSync(path.join(this.workSpace.resDir, restree.lhDir[i]))
-						for (let j = 0; j < localmodel.length; j++) {
-							let en = path.extname(localmodel[j])
-							if (en == '.lh') {
-								let resObj = {
-									label: localmodel[j],
-									fileType: en,
-									path: restree.lhDir[i]
-								}
-								modelChildren.push(resObj)
-							}
-						}
-						restree.children.push({
-							label: restree.lhDir[i],
-							children: modelChildren
-						})
-					}
-					localStorage.setItem('config', JSON.stringify(cfg))
-					this.localConfig = cfg
-					// console.log(this.localConfig)
+					this.config = JSON.parse(JSON.stringify(o))
 				}
+				this.localConfig = {}
+				let cfg = JSON.parse(JSON.stringify(this.config))
+				// 表格文件列表
+				let tablelist = fs.readdirSync(this.workSpace.tableDir)
+				for (let i = 0; i < tablelist.length; i++) {
+					if (path.extname(tablelist[i]) == '.xlsx') {
+						let tableObj = {
+							label: tablelist[i],
+							fileType: 'xlsx',
+							byServer: true,
+							byClient: true,
+							serverIgnore: ['mark'],
+							clientIgnore: ['mark'],
+							disabled: false
+						}
+						cfg.content.treeData[0].children.push(tableObj)
+					}
+				}
+
+				let restree = cfg.content.treeData[1]
+
+				// 资源文件列表
+				let resChildren = []
+				let localres = fs.readdirSync(path.join(this.workSpace.resDir, restree.resDir))
+				for (let i = 0; i < localres.length; i++) {
+					let en = path.extname(localres[i])
+					if (en == '.png' || en == '.jpg' || en == '.lav' || en == '.lmat') {
+						let resObj = {
+							label: localres[i],
+							fileType: en,
+							path: restree.resDir
+						}
+						resChildren.push(resObj)
+					}
+				}
+				restree.children.push({
+					label: restree.resDir,
+					children: resChildren
+				})
+				//场景文件列表
+				let sceneChildren = []
+				let localscene = fs.readdirSync(path.join(this.workSpace.resDir, restree.lsDir))
+				for (let i = 0; i < localscene.length; i++) {
+					let en = path.extname(localscene[i])
+					if (en == '.ls') {
+						let resObj = {
+							label: localscene[i],
+							fileType: en,
+							path: restree.lsDir
+						}
+						sceneChildren.push(resObj)
+					}
+				}
+				restree.children.push({
+					label: restree.lsDir,
+					children: sceneChildren
+				})
+				//模型文件列表
+
+				for (let i = 0; i < restree.lhDir.length; i++) {
+					let modelChildren = []
+					let localmodel = fs.readdirSync(path.join(this.workSpace.resDir, restree.lhDir[i]))
+					for (let j = 0; j < localmodel.length; j++) {
+						let en = path.extname(localmodel[j])
+						if (en == '.lh') {
+							let resObj = {
+								label: localmodel[j],
+								fileType: en,
+								path: restree.lhDir[i]
+							}
+							modelChildren.push(resObj)
+						}
+					}
+					restree.children.push({
+						label: restree.lhDir[i],
+						children: modelChildren
+					})
+				}
+				localStorage.setItem('config', JSON.stringify(this.config))
+				this.localConfig = cfg
+				console.log(this.localConfig)
+
 			},
 			setProjConfig() {
 				if (!this.configed) {
@@ -402,7 +407,7 @@
 				this.nmDialogVisible = true
 			},
 			fileOperation(fileObj, group) {
-				fs.exists(path.join(this.workSpace.resDir, 'Assets'), e=> {
+				fs.exists(path.join(this.workSpace.resDir, 'Assets'), e => {
 					if (e) {
 						let filePath = path.join(fileObj)
 						let fileType = path.extname(fileObj)
@@ -443,34 +448,45 @@
 				})
 			},
 			addScene() {
+				this.fullscreenLoading = true
 				this.fileOperation(this.newScene.file)
 				//Todo Edit Table & png
-				this.nsDialogVisible = false
+				
 				this.newScene = {
 					name: "",
 					file: "",
 					png: ""
 				}
-				Bus.$emit('updataTree', this.localConfig.content.treeData)
-				this.$message({
-					message: '成功增加一个新场景',
-					type: 'success'
-				})
+				setTimeout(() => {
+					this.initProjConfig()
+					Bus.$emit('updataTree', this.localConfig.content.treeData)
+					this.nsDialogVisible = false
+					this.$message({
+						message: '成功增加一个新场景',
+						type: 'success'
+					})
+					this.fullscreenLoading = false
+				}, 2000)
 			},
 			addModel() {
+				this.fullscreenLoading = true
 				this.fileOperation(this.newModel.file, this.newModel.group)
-				this.nmDialogVisible = false
 				this.newModel = {
 					name: "",
 					file: "",
 					icon: "",
 					group: ""
 				}
-				Bus.$emit('updataTree', this.localConfig.content.treeData)
-				this.$message({
-					message: '成功增加一个新模型',
-					type: 'success'
-				})
+				setTimeout(() => {
+					this.initProjConfig()
+					Bus.$emit('updataTree', this.localConfig.content.treeData)
+					this.$message({
+						message: '成功增加一个新模型',
+						type: 'success'
+					})
+					this.nmDialogVisible = false
+					this.fullscreenLoading = false
+				}, 2000)
 			},
 			addModelIcon() {
 				let self = this
