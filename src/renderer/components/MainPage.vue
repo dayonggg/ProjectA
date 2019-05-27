@@ -261,7 +261,8 @@
 						if (en == '.png' || en == '.jpg' || en == '.lav' || en == '.lmat') {
 							let resObj = {
 								label: localres[i],
-								fileType: en
+								fileType: en,
+								path:restree.resDir
 							}
 							resChildren.push(resObj)
 						}
@@ -529,7 +530,7 @@
 				console.log(this.tabState)
 			},
 			saveAllTab() {
-
+				console.log(this.localConfig)
 			},
 			publish() {
 

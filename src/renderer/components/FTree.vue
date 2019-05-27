@@ -29,7 +29,7 @@
 		},
 		methods: {
 			nodeClick(data) {
-				if (data.fileType == "xlsx" || data.fileType == '.ls' || data.fileType == '.lh' || data.fileType == '.lmat') {
+				if (data.hasOwnProperty("fileType")) {
 					Bus.$emit('addTab', data)
 				}
 			},

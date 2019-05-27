@@ -30,7 +30,6 @@ function createWindow() {
 		minWidth:1000,
 		minHeight:540,
 		webPreferences: {
-			devTools:true,
 			webSecurity: false,
 		},
 		show: false
