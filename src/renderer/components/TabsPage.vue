@@ -101,10 +101,12 @@
 				this.editableTabsValue = activeName
 				if(close){
 					this.editableTabs = tabs.filter(tab => tab.label !== targetName)
+					this.unSavedTabs = this.unSavedTabs.filter(item => item != targetName)
 				}else{
 					this.$confirm('修改未保存，确认要放弃保存修改的内容吗？')
 						.then(_ => {
 							this.editableTabs = tabs.filter(tab => tab.label !== targetName)
+							this.unSavedTabs = this.unSavedTabs.filter(item => item != targetName)
 							done()
 						})
 						.catch(_ => {})
