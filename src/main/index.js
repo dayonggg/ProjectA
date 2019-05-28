@@ -131,7 +131,7 @@ ipcMain.on('open-scene-png', (event) => {
 		}]
 	}, (files) => {
 		if (files) {
-			event.sender.send('selected-scene', files)
+			event.sender.send('selected-scene-png', files)
 		}
 	})
 })

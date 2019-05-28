@@ -76,11 +76,16 @@
 						<el-button @click="selectSceneFile" slot="append" icon="el-icon-folder-opened"></el-button>
 					</el-input>
 				</el-form-item>
-
+				<el-form-item>
+					<div class="new-model-ico" @click="addSceneIcon">
+						<img v-if="newScene.png" :src="['file://'+newScene.png]" width="32px" height="32px">
+						<i v-else class="el-icon-plus avatar-uploader-icon"></i>
+					</div>
+				</el-form-item>
 			</el-form>
 			<span slot="footer" class="dialog-footer">
 				<el-button @click="dialogCancel">取 消</el-button>
-				<el-button :disabled="!newScene.name ||!newScene.file" type="primary" @click="addScene">确 定</el-button>
+				<el-button :disabled="!newScene.name ||!newScene.file||!newScene.png" type="primary" @click="addScene">确 定</el-button>
 			</span>
 		</el-dialog>
 		<!-- 新增模型 -->
@@ -446,7 +451,18 @@
 				} else {
 					this.fullscreenLoading = true
 					this.fileOperation(this.newScene.file)
-					//Todo Edit Table & png
+					let imgSource = this.newScene.png
+					let imgTarget = path.format({
+						dir: path.join(this.workSpace.resDir, 'scene'),
+						base: path.parse(this.newScene.file).name + path.extname(this.newScene.png)
+					})
+					fs.readFile(imgSource, function(err, originBuffer) {
+						fs.writeFile(imgTarget, originBuffer, function(err) {
+							if (err) {
+								console.log(err)
+							}
+						});
+					})
 
 					this.newScene = {
 						name: "",
@@ -471,6 +487,18 @@
 				} else {
 					this.fullscreenLoading = true
 					this.fileOperation(this.newModel.file, this.newModel.group)
+					let imgSource = this.newModel.icon
+					let imgTarget = path.format({
+						dir: path.join(this.workSpace.resDir, this.newModel.group),
+						base: path.parse(this.newModel.file).name + path.extname(this.newModel.icon)
+					})
+					fs.readFile(imgSource, function(err, originBuffer) {
+						fs.writeFile(imgTarget, originBuffer, function(err) {
+							if (err) {
+								console.log(err)
+							}
+						});
+					})
 					this.newModel = {
 						name: "",
 						file: "",
@@ -488,6 +516,13 @@
 						this.fullscreenLoading = false
 					}, 2000)
 				}
+			},
+			addSceneIcon() {
+				let self = this
+				ipc.ipcRenderer.send('open-scene-png', '选择模型图标')
+				ipc.ipcRenderer.on('selected-scene-png', (e, dir) => {
+					self.newScene.png = dir.toString()
+				})
 			},
 			addModelIcon() {
 				let self = this
