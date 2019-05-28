@@ -246,8 +246,8 @@
 							}, {
 								label: "Resource",
 								resDir: "Assets",
-								lsDir: "scene",
-								lhDir: ["grounds", "monster", "role"],
+								lsDir: "scenes",
+								lhDir: ["grounds", "monster", "roles"],
 								children: []
 							}]
 						}
@@ -258,11 +258,14 @@
 				let cfg = JSON.parse(JSON.stringify(this.config))
 				// 表格文件列表
 				let tablelist = fs.readdirSync(this.workSpace.tableDir)
-				table.init(tablelist, () => {
-					cfg.content.treeData[0].children = table.tableTree
-				})
-
+				setTimeout(() => {
+					table.init(tablelist, function() {
+						cfg.content.treeData[0].children = table.tableTree
+					})	
+				}, 1000)
 				let restree = cfg.content.treeData[1]
+				console.log('tablelist', tablelist)
+				
 
 				// 资源文件列表
 				let resChildren = []
@@ -386,6 +389,8 @@
 			addWS() {
 				fs.exists(path.join(this.workSpace.resDir, 'Assets'), e => {
 					if (e) {
+						localStorage.setItem('tableDir', this.workSpace.tableDir)
+						localStorage.setItem('resDir', this.workSpace.resDir)
 						this.initProjConfig()
 						self.modelGroups = this.localConfig.content.treeData[1].lhDir
 						Bus.$emit('updataTree', this.localConfig.content.treeData)
@@ -416,9 +421,9 @@
 						let d = fs.readFileSync(filePath)
 						let obj = JSON.parse(d.toString())
 						this.fl = []
-						this.parseJson(obj, sourceRoot)
+						this.parseJson(obj, sourceRoot,fileType)
 						if (fileType == '.ls') {
-							fs.writeFileSync(path.join(targetRoot, 'scene', path.basename(filePath)), this.replaceWithArr(JSON.stringify(
+							fs.writeFileSync(path.join(targetRoot, 'scenes', path.basename(filePath)), this.replaceWithArr(JSON.stringify(
 								obj,
 								null, "\t"), this.unique(this.fl)))
 						}
@@ -455,7 +460,7 @@
 					this.fileOperation(this.newScene.file)
 					let imgSource = this.newScene.png
 					let imgTarget = path.format({
-						dir: path.join(this.workSpace.resDir, 'scene'),
+						dir: path.join(this.workSpace.resDir, 'scenes'),
 						base: path.parse(this.newScene.file).name + path.extname(this.newScene.png)
 					})
 					fs.readFile(imgSource, function(err, originBuffer) {
@@ -545,13 +550,13 @@
 				}
 				return hash;
 			},
-			parseJson(obj, sourceRoot) {
+			parseJson(obj, sourceRoot,fileType) {
 				for (var key in obj) {
 					var ele = obj[key]
 					let self = this
 					if (Object.prototype.toString.call(ele) === '[object Object]' || Object.prototype.toString.call(ele) ===
 						'[object Array]') {
-						this.parseJson(ele, sourceRoot)
+						this.parseJson(ele, sourceRoot,fileType)
 					} else if (Object.prototype.toString.call(ele) === '[object String]') {
 						if (path.extname(ele) == '.png' || path.extname(ele) == '.jpg' || path.extname(ele) == '.lav' || path.extname(
 								ele) ==
@@ -565,14 +570,19 @@
 									}
 								});
 							})
-							self.fl.push(ele + "@Assets/" + path.basename(ele))
+							if(fileType == '.ls' || fileType == '.lh'){
+								self.fl.push(ele + "@../Assets/" + path.basename(ele))
+							}else{
+								self.fl.push(ele + "@./" + path.basename(ele))
+							}
+							
 						}
 						if (path.extname(ele) == '.lmat') {
 							let lmatPath = path.join(sourceRoot, ele)
 							let d = fs.readFileSync(lmatPath)
 							let obj1 = JSON.parse(d.toString())
-							this.parseJson(obj1, path.dirname(lmatPath))
-							self.fl.push(ele + "@Assets/" + path.basename(ele))
+							this.parseJson(obj1, path.dirname(lmatPath),path.extname(ele))
+							self.fl.push(ele + "@../Assets/" + path.basename(ele))
 							fs.writeFileSync(path.join(this.workSpace.resDir, 'Assets', path.basename(ele)), self.replaceWithArr(JSON.stringify(
 								obj1, null, "\t"), this.unique(this.fl)))
 						}

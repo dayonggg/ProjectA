@@ -1,25 +1,28 @@
-import fs from 'fs'
 import path from 'path'
 import xlsx from 'node-xlsx'
 
 export default {
 	tableDir: localStorage.getItem('tableDir') || '',
-	tableConfig: JSON.parse(localStorage.getItem('tablesConfig')) || [],
+	tableConfig: [],
 	tableList: [],
 	tableDatas: {},
 	tableTree: [],
-	init(tableList, callback) {
-		this.tableList = tableList
+	init(tl, callback) {
+		this.tableList = tl
 		this.tableDatas = {}
-		// 将表格文件存入对象
-		for (let i = 0; i < tableList.length; i++) {
-			this.tableDatas[tableList[i]] = this.setExcelData(tableList[i])
-			this.tableTree.push(this.getTableConfig(tableList[i]))
+		let tcs = localStorage.getItem('tablesConfig') || ''
+		if (tcs != '') {
+			this.tableConfig = JSON.parse(localStorage.getItem('tablesConfig'))
+		} else {
+			localStorage.setItem('tablesConfig', '[]')
 		}
-
-
-		console.log(this.tableDatas)
-		console.log(this.tableTree)
+		// 将表格文件存入对象
+		for (let i = 0; i < tl.length; i++) {
+			this.tableDatas[tl[i]] = this.setExcelData(tl[i])
+			this.tableTree.push(this.getTableConfig(tl[i]))
+		}
+// 		console.log(this.tableDatas)
+// 		console.log(this.tableTree)
 		callback()
 	},
 	getTableConfig(tablename) {
@@ -41,7 +44,6 @@ export default {
 	},
 	setExcelData(table) {
 		let list = xlsx.parse(path.join(this.tableDir, table))
-		// console.log(list)
 		let data = list[0].data
 		return data
 	},
@@ -52,7 +54,7 @@ export default {
 		}
 		return arr
 	},
-	save(){
-		localStorage.setItem('tablesConfig',JSON.stringify(this.tableConfig))
+	save() {
+		localStorage.setItem('tablesConfig', JSON.stringify(this.tableConfig))
 	}
 }
