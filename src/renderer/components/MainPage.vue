@@ -136,7 +136,7 @@
 	import Bus from './Bus'
 	import $ from 'Jquery'
 	import table from './table.js'
-	import pkg from '../../../package.json' 
+	import pkg from '../../../package.json'
 
 	export default {
 		name: "main-page",
@@ -208,9 +208,12 @@
 					}
 				})
 			}
-			// this.tabState= this.$refs.tabspage.$data
 			this.$set(this.$data, 'tabState', this.$refs.tabspage.$data)
 			this.fullscreenLoading = false
+			// 检测窗口变化,更新ace组建尺寸
+			$(window).resize(function() {
+				Bus.$emit('resize', {})
+			})
 		},
 		methods: {
 			showLeft() {
