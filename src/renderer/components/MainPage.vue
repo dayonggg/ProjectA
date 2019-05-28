@@ -130,6 +130,7 @@
 	import TabsPage from './TabsPage'
 	import Bus from './Bus'
 	import $ from 'Jquery'
+	import table from './table.js'
 
 	export default {
 		name: "main-page",
@@ -166,7 +167,9 @@
 				saveSpaceDir: true, //是否保存工作空间地址
 				modelGroups: [], //模型类别列表
 				fl: [],
-				tabState: {}
+				tabState: {},
+				sceneList: [],
+				modelList: []
 			}
 		},
 		components: {
@@ -248,20 +251,9 @@
 				let cfg = JSON.parse(JSON.stringify(this.config))
 				// 表格文件列表
 				let tablelist = fs.readdirSync(this.workSpace.tableDir)
-				for (let i = 0; i < tablelist.length; i++) {
-					if (path.extname(tablelist[i]) == '.xlsx') {
-						let tableObj = {
-							label: tablelist[i],
-							fileType: 'xlsx',
-							byServer: true,
-							byClient: true,
-							serverIgnore: ['mark'],
-							clientIgnore: ['mark'],
-							disabled: false
-						}
-						cfg.content.treeData[0].children.push(tableObj)
-					}
-				}
+				table.init(tablelist, () => {
+					cfg.content.treeData[0].children = table.tableTree
+				})
 
 				let restree = cfg.content.treeData[1]
 
@@ -294,6 +286,7 @@
 							fileType: en,
 							path: restree.lsDir
 						}
+						this.sceneList.push(localscene[i])
 						sceneChildren.push(resObj)
 					}
 				}
@@ -314,6 +307,7 @@
 								fileType: en,
 								path: restree.lhDir[i]
 							}
+							this.modelList.push(localmodel[j])
 							modelChildren.push(resObj)
 						}
 					}
@@ -324,7 +318,6 @@
 				}
 				localStorage.setItem('config', JSON.stringify(this.config))
 				this.localConfig = cfg
-				console.log(this.localConfig)
 
 			},
 			setProjConfig() {
@@ -448,45 +441,53 @@
 				})
 			},
 			addScene() {
-				this.fullscreenLoading = true
-				this.fileOperation(this.newScene.file)
-				//Todo Edit Table & png
-				
-				this.newScene = {
-					name: "",
-					file: "",
-					png: ""
+				if (this.sceneList.indexOf(path.basename(this.newScene.file)) > -1) {
+					this.$message.error('添加场景失败，已有同名场景')
+				} else {
+					this.fullscreenLoading = true
+					this.fileOperation(this.newScene.file)
+					//Todo Edit Table & png
+
+					this.newScene = {
+						name: "",
+						file: "",
+						png: ""
+					}
+					setTimeout(() => {
+						this.initProjConfig()
+						Bus.$emit('updataTree', this.localConfig.content.treeData)
+						this.nsDialogVisible = false
+						this.$message({
+							message: '成功增加一个新场景',
+							type: 'success'
+						})
+						this.fullscreenLoading = false
+					}, 2000)
 				}
-				setTimeout(() => {
-					this.initProjConfig()
-					Bus.$emit('updataTree', this.localConfig.content.treeData)
-					this.nsDialogVisible = false
-					this.$message({
-						message: '成功增加一个新场景',
-						type: 'success'
-					})
-					this.fullscreenLoading = false
-				}, 2000)
 			},
 			addModel() {
-				this.fullscreenLoading = true
-				this.fileOperation(this.newModel.file, this.newModel.group)
-				this.newModel = {
-					name: "",
-					file: "",
-					icon: "",
-					group: ""
+				if (this.sceneList.indexOf(path.basename(this.newScene.file)) > -1) {
+					this.$message.error('添加模型失败，已有同名模型')
+				} else {
+					this.fullscreenLoading = true
+					this.fileOperation(this.newModel.file, this.newModel.group)
+					this.newModel = {
+						name: "",
+						file: "",
+						icon: "",
+						group: ""
+					}
+					setTimeout(() => {
+						this.initProjConfig()
+						Bus.$emit('updataTree', this.localConfig.content.treeData)
+						this.$message({
+							message: '成功增加一个新模型',
+							type: 'success'
+						})
+						this.nmDialogVisible = false
+						this.fullscreenLoading = false
+					}, 2000)
 				}
-				setTimeout(() => {
-					this.initProjConfig()
-					Bus.$emit('updataTree', this.localConfig.content.treeData)
-					this.$message({
-						message: '成功增加一个新模型',
-						type: 'success'
-					})
-					this.nmDialogVisible = false
-					this.fullscreenLoading = false
-				}, 2000)
 			},
 			addModelIcon() {
 				let self = this

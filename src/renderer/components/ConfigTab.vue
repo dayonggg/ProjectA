@@ -51,12 +51,12 @@
 							</el-switch>
 						</template>
 					</el-table-column>
-					<el-table-column prop="disabled" label="是否可见" width="80">
+					<!-- <el-table-column prop="disabled" label="是否可见" width="80">
 						<template slot-scope="scope">
 							<el-switch :width="25" v-model="!scope.row.disabled">
 							</el-switch>
 						</template>
-					</el-table-column>
+					</el-table-column> -->
 				</el-table>
 			</el-form-item>
 		</el-form>
@@ -73,10 +73,11 @@
 		data() {
 			return {
 				config: JSON.parse(localStorage.getItem('config')),
+				
 				tableDir: localStorage.getItem('tableDir'),
 				resDir: localStorage.getItem('resDir'),
 				modelGroups: [],
-				tables: [],
+				tables: table.tableTree,
 				tagInputVisible: false,
 				groupInputValue: '',
 				ignoreForServer: true,
@@ -86,13 +87,17 @@
 		components: {
 			IgnoreSelect
 		},
+		props: {
+			cfg: Object
+		},
 		mounted() {
+			console.log(this.cfg)
 			this.modelGroups = this.config.content.treeData[1].lhDir
-			this.tables = this.config.content.treeData[0].children
-			let tableList = []
-			for (let i = 0; i < this.tables.length; i++) {
-				tableList.push(this.tables[i].label)
-			}
+			// this.tables = this.cfg.content.treeData[0].children
+// 			let tableList = []
+// 			for (let i = 0; i < this.tables.length; i++) {
+// 				tableList.push(this.tables[i].label)
+// 			}
 			Bus.$on('updataIgnore', content => {
 				let t = this.tables
 				for (let i = 0; i < t.length; i++) {
@@ -105,7 +110,7 @@
 					}
 				}
 			})
-			table.init(tableList)
+			
 		},
 		methods: {
 			tagClose(group) {
@@ -129,15 +134,21 @@
 				this.tagInputVisible = false
 				this.groupInputValue = ''
 			},
-			saveConfig(){
+			save(){
 				localStorage.setItem('tableDir',this.tableDir)
 				localStorage.setItem('resDir',this.resDir)
-				localStorage.setItem('config',this.config)
+				table.save()
 				this.saved = true
 			}
 		},
 		watch: {
 			config: {
+				handler() {
+					this.saved = false
+				},
+				deep: true
+			},
+			tables: {
 				handler() {
 					this.saved = false
 				},
