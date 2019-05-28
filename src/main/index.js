@@ -23,12 +23,12 @@ function createWindow() {
 	 * Initial window options
 	 */
 	mainWindow = new BrowserWindow({
-		title:'Game Resource Designer',
+		title: 'Game Resource Designer',
 		height: 563,
 		useContentSize: true,
 		width: 1000,
-		minWidth:1000,
-		minHeight:540,
+		minWidth: 1000,
+		minHeight: 540,
 		webPreferences: {
 			webSecurity: false,
 		},
@@ -44,6 +44,18 @@ function createWindow() {
 	mainWindow.on('closed', () => {
 		mainWindow = null
 	})
+}
+
+const isSecondInstance = app.makeSingleInstance((commandLine, workingDirectory) => {
+	// Someone tried to run a second instance, we should focus our window.
+	if (mainWindow) {
+		if (mainWindow.isMinimized()) mainWindow.restore()
+		mainWindow.focus()
+	}
+})
+
+if (isSecondInstance) {
+	app.quit()
 }
 
 app.on('ready', createWindow)
