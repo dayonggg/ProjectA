@@ -136,12 +136,13 @@
 	import Bus from './Bus'
 	import $ from 'Jquery'
 	import table from './table.js'
+	import pkg from '../../../package.json' 
 
 	export default {
 		name: "main-page",
 		data() {
 			return {
-				version: '0.0.3',
+				version: pkg.version,
 				fullscreenLoading: true,
 				configed: true,
 				saveBtnDisable: true, //保存按钮是否不可用
@@ -186,8 +187,6 @@
 				localStorage.clear()
 				localStorage.setItem('version', this.version)
 			}
-
-
 			this.workSpace.tableDir = localStorage.getItem('tableDir') || ''
 			this.workSpace.resDir = localStorage.getItem('resDir') || ''
 
