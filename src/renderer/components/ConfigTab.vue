@@ -73,7 +73,7 @@
 		data() {
 			return {
 				config: JSON.parse(localStorage.getItem('config')),
-				
+
 				tableDir: localStorage.getItem('tableDir'),
 				resDir: localStorage.getItem('resDir'),
 				modelGroups: [],
@@ -94,10 +94,10 @@
 			console.log(this.cfg)
 			this.modelGroups = this.config.content.treeData[1].lhDir
 			// this.tables = this.cfg.content.treeData[0].children
-// 			let tableList = []
-// 			for (let i = 0; i < this.tables.length; i++) {
-// 				tableList.push(this.tables[i].label)
-// 			}
+			// 			let tableList = []
+			// 			for (let i = 0; i < this.tables.length; i++) {
+			// 				tableList.push(this.tables[i].label)
+			// 			}
 			Bus.$on('updataIgnore', content => {
 				let t = this.tables
 				for (let i = 0; i < t.length; i++) {
@@ -110,7 +110,7 @@
 					}
 				}
 			})
-			
+
 		},
 		methods: {
 			tagClose(group) {
@@ -134,9 +134,9 @@
 				this.tagInputVisible = false
 				this.groupInputValue = ''
 			},
-			save(){
-				localStorage.setItem('tableDir',this.tableDir)
-				localStorage.setItem('resDir',this.resDir)
+			save() {
+				localStorage.setItem('tableDir', this.tableDir)
+				localStorage.setItem('resDir', this.resDir)
 				table.save()
 				this.saved = true
 			}
@@ -164,12 +164,12 @@
 					this.saved = false
 				}
 			},
-			saved:{
+			saved: {
 				handler() {
 					let self = this
 					Bus.$emit('page-state', {
-						label:'设置',
-						saved:self.saved
+						label: '设置',
+						saved: self.saved
 					})
 				}
 			}
