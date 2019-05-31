@@ -6,6 +6,9 @@
 			<div class="main-menu-panel">
 				<!-- 保存、全部保存、发布 -->
 				<el-button-group class="main-menu-addgroup">
+					<el-button icon="iconfont gd-iconsave" @click="reset"></el-button>
+				</el-button-group>
+				<el-button-group class="main-menu-addgroup">
 					<el-button icon="iconfont gd-iconsave" @click="saveTab" :disabled="saveBtnDisable"></el-button>
 					<el-button icon="iconfont gd-iconcontentsaveall" @click="saveAllTab" :disabled="saveAllBtnDisable"></el-button>
 					<el-button icon="iconfont gd-iconpublish" @click="publish" :disabled="publishBtnDisable"></el-button>
@@ -247,7 +250,7 @@
 								label: "Resource",
 								resDir: "Assets",
 								lsDir: "scenes",
-								lhDir: ["grounds", "monster", "roles"],
+								lhDir: ["grounds", "monster", "roles", "AApoint"],
 								children: []
 							}]
 						}
@@ -598,6 +601,10 @@
 					str = str.replace(re, a[1])
 				}
 				return str
+			},
+			reset() {
+				localStorage.clear()
+				window.location.reload()
 			},
 			saveTab() {
 				console.log(this.tabState)
