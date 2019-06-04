@@ -17,7 +17,7 @@
 					colHeaders: this.getHeader(), //当值为true时显示行头，当值为数组时，行头为数组的值
 					columns: this.getColumns(), //设置列数据类型，项目只提供text和numeric
 					rowHeaders: true,
-					stretchH: 'none', //根据宽度横向扩展，last:只扩展最后一列，none：默认不扩展,all:全部扩展
+					stretchH: 'all', //根据宽度横向扩展，last:只扩展最后一列，none：默认不扩展,all:全部扩展
 					data: this.getData(), //表格数据
 					minRows: 20, //最小显示行数
 					// fixedRowsTop:3,//锁定行数
