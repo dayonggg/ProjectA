@@ -1,5 +1,6 @@
 import path from 'path'
 import xlsx from 'node-xlsx'
+import $ from 'Jquery'
 
 export default {
 	tableDir: localStorage.getItem('tableDir') || '',
@@ -17,8 +18,8 @@ export default {
 			localStorage.setItem('tablesConfig', '[]')
 		}
 		// 将表格文件存入对象
-		for (let i = 0; i < tl.length; i++) {
-			let exceldata = this.setExcelData(tl[i])
+		$.each(tl, (key, value) => {
+			let exceldata = this.setExcelData(value)
 			let o = {
 				header: {
 					text: exceldata[0],
@@ -27,14 +28,16 @@ export default {
 				},
 				data: exceldata.filter((item, index) => index >= 3)
 			}
-			this.tableDatas[tl[i]] = o
-			this.tableTree.push(this.getTableConfig(tl[i]))
-		}
-		callback()
+			this.tableDatas[value] = o
+			this.tableTree.push(this.getTableConfig(value))
+			if (key == tl.length - 1) {
+				callback()
+			}
+		})
 	},
 	getDataType(typeArr) {
 		let dt = []
-		if(typeArr != undefined){
+		if (typeArr != undefined) {
 			for (let i = 0; i < typeArr.length; i++) {
 				let obj = {}
 				if (typeArr[i] == 'string') {
@@ -46,7 +49,7 @@ export default {
 				dt.push(obj)
 			}
 		}
-		
+
 		return dt
 	},
 	getTableConfig(tablename) {
