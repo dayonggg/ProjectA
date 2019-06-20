@@ -5,8 +5,8 @@
 <script>
 	import Bus from '../Bus'
 	import fs from 'fs'
-	import path from 'path'
 	import $ from 'Jquery'
+	import D from '../Common/data.js'
 
 	export default {
 		name: "editor-tab",
@@ -14,10 +14,9 @@
 			return {
 				editor: {},
 				code: '',
-				fcode:'',
+				fcode: '',
 				width: '600',
 				height: '400',
-				filePath: '',
 				saved: true
 			}
 		},
@@ -34,14 +33,12 @@
 			Bus.$on('resize', content => {
 				this.updateSize()
 			})
-			this.filePath = path.join(localStorage.getItem('resDir'), this.json.path, this.json.label)
-			fs.exists(this.filePath, e => {
-				if (e) {
-					this.code = JSON.stringify(JSON.parse(fs.readFileSync(this.filePath).toString()), null, "\t")
-					this.fcode = JSON.stringify(JSON.parse(fs.readFileSync(this.filePath).toString()), null, "\t")
-				}
-				if (!e) {
-					console.log('no file')
+			fs.readFile(this.json.file, (err, data) => {
+				if (err) {
+					this.$message.error('未找到该文件')
+				} else {
+					this.code = data.toString()
+					this.fcode = data.toString()
 				}
 			})
 		},

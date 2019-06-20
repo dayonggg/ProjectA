@@ -2,7 +2,7 @@
 	<el-tabs v-model="editableTabsValue" type="border-card" closable @tab-remove="removeTab">
 		<el-tab-pane v-for="(item, index) in editableTabs" :key="item.label" :label="item.label" :name="item.label">
 			<span slot="label"><i v-show="!item.saved">*</i>{{item.label}}</span>
-			<table-tab v-if="item.extname == 'xlsx'" :id="item.label" :target="item"></table-tab>
+			<table-tab v-if="item.extname == '.xlsx'" :id="item.label" :target="item"></table-tab>
 			<config-tab v-if="item.extname == 'conf'" :id="item.label" :cfg='item'></config-tab>
 			<editor-tab v-if="item.extname == '.ls' || item.extname == '.lh' || item.extname == '.lmat'|| item.extname == '.lav'"
 			 :id="item.label" :json="item"></editor-tab>

@@ -1,5 +1,6 @@
 import fs from 'fs'
 import path from 'path'
+import xlsx from 'node-xlsx'
 import $ from 'Jquery'
 import pkg from '../../../../package.json'
 import Bus from '../Bus.js'
@@ -204,6 +205,11 @@ export default {
 		let modelDir = group
 		return fs.existsSync(path.join(this.resDir, modelDir, filename + '.lh'))
 	},
-
+	
+	getExcelData(file) {
+		let list = xlsx.parse(file)
+		let data = list[0].data
+		return data
+	},
 
 }
