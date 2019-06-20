@@ -3,10 +3,10 @@
 </template>
 
 <script>
-	import Bus from './Bus'
+	import Bus from '../Bus'
 	import Handsontable from 'handsontable'
 	import HotTable from '@handsontable/vue'
-	import table from './table.js'
+	import table from '../table.js'
 
 	export default {
 		name: "table-tab",

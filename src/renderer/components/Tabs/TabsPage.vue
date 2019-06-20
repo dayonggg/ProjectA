@@ -2,17 +2,17 @@
 	<el-tabs v-model="editableTabsValue" type="border-card" closable @tab-remove="removeTab">
 		<el-tab-pane v-for="(item, index) in editableTabs" :key="item.label" :label="item.label" :name="item.label">
 			<span slot="label"><i v-show="!item.saved">*</i>{{item.label}}</span>
-			<table-tab v-if="item.fileType == 'xlsx'" :id="item.label" :target="item"></table-tab>
-			<config-tab v-if="item.fileType == 'conf'" :id="item.label" :cfg='item'></config-tab>
-			<editor-tab v-if="item.fileType == '.ls' || item.fileType == '.lh' || item.fileType == '.lmat'|| item.fileType == '.lav'"
+			<table-tab v-if="item.extname == 'xlsx'" :id="item.label" :target="item"></table-tab>
+			<config-tab v-if="item.extname == 'conf'" :id="item.label" :cfg='item'></config-tab>
+			<editor-tab v-if="item.extname == '.ls' || item.extname == '.lh' || item.extname == '.lmat'|| item.extname == '.lav'"
 			 :id="item.label" :json="item"></editor-tab>
-			<image-tab v-if="item.fileType == '.png' || item.fileType == '.jpg'" :id="item.label" :img="item"></image-tab>
+			<image-tab v-if="item.extname == '.png' || item.extname == '.jpg' || item.extname == '.jpeg'" :id="item.label" :img="item"></image-tab>
 		</el-tab-pane>
 	</el-tabs>
 </template>
 
 <script>
-	import Bus from './Bus'
+	import Bus from '../Bus.js'
 	import TableTab from './TableTab'
 	import ConfigTab from './ConfigTab'
 	import EditorTab from './EditorTab'

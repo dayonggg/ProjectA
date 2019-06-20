@@ -3,7 +3,7 @@
 </template>
 
 <script>
-	import Bus from './Bus'
+	import Bus from '../Bus'
 	import fs from 'fs'
 	import path from 'path'
 	import $ from 'Jquery'
@@ -67,10 +67,9 @@
 			},
 			saved: {
 				handler() {
-					let self = this
 					Bus.$emit('page-state', {
-						label: self.$el.id,
-						saved: self.saved
+						label: this.$el.id,
+						saved: this.saved
 					})
 				}
 			}

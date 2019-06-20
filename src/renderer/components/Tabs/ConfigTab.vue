@@ -64,8 +64,8 @@
 </template>
 
 <script>
-	import Bus from './Bus'
-	import table from './table.js'
+	import Bus from '../Bus'
+	import table from '../table.js'
 	import IgnoreSelect from './IgnoreSelect'
 
 	export default {
