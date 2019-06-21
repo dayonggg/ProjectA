@@ -1,5 +1,5 @@
 <template>
-	<el-tabs v-model="editableTabsValue" type="border-card" closable @tab-remove="removeTab">
+	<el-tabs v-model="editableTabsValue" type="border-card" closable @tab-remove="removeTab" @tab-click="clickTab">
 		<el-tab-pane v-for="(item, index) in editableTabs" :key="item.label" :label="item.label" :name="item.label">
 			<span slot="label"><i v-show="!item.saved">*</i>{{item.label}}</span>
 			<table-tab v-if="item.extname == '.xlsx'" :id="item.label" :target="item"></table-tab>
@@ -12,6 +12,7 @@
 </template>
 
 <script>
+	import $ from 'Jquery'
 	import Bus from '../Bus.js'
 	import TableTab from './TableTab'
 	import ConfigTab from './ConfigTab'
@@ -25,7 +26,6 @@
 				editableTabsValue: '',
 				editableTabs: [],
 				tabIndex: '',
-				unSavedTabs: []
 			}
 		},
 		components: {
@@ -38,40 +38,14 @@
 			Bus.$on('addTab', content => {
 				this.addTab(content)
 			})
-			Bus.$on('page-state', content => {
-				if (content.saved) {
-					for (let i = 0; i < this.unSavedTabs; i++) {
-						if (this.unSavedTabs[i] == content.label) {
-							this.unSavedTabs.splice(i, 1)
-							break
-						}
-					}
-				} else {
-					let isnew = true
-					for (let i = 0; i < this.unSavedTabs; i++) {
-						if (this.unSavedTabs[i] == content.label) {
-							isnew = false
-						}
-					}
-					if (isnew) {
-						this.unSavedTabs.push(content.label)
-					}
+			Bus.$on('current-tab-saved', content => {
+				if(!$.isEmptyObject(content)){
+					this.setEditStat(content)
 				}
-				this.setSaved()
+				
 			})
 		},
 		methods: {
-			setSaved() {
-				for (let i = 0; i < this.editableTabs.length; i++) {
-					this.editableTabs[i].saved = true
-					for (let j = 0; j < this.unSavedTabs.length; j++) {
-						if (this.editableTabs[i].label == this.unSavedTabs[j]) {
-							this.editableTabs[i].saved = false
-							this.$set(this.editableTabs, i, this.editableTabs[i])
-						}
-					}
-				}
-			},
 			addTab(targetName) {
 				let etabs = this.editableTabs;
 				let isnew = true;
@@ -86,11 +60,12 @@
 					this.editableTabs.push(targetName)
 				}
 				this.editableTabsValue = targetName.label
+				Bus.$emit('current-tab-saved', this.getEditStat())
 			},
 			removeTab(targetName) {
 				let tabs = this.editableTabs
 				let activeName = this.editableTabsValue
-				let close = false
+				let close = true
 				if (activeName === targetName) {
 					tabs.forEach((tab, index) => {
 						if (tab.label === targetName) {
@@ -102,22 +77,54 @@
 						}
 					})
 				}
-				this.editableTabsValue = activeName
+				
+				tabs.forEach((tab,index)=>{
+					if(tab.label === targetName){
+						close = tab.saved
+					}
+				})
+				
 				if (close) {
+					this.editableTabsValue = activeName
 					this.editableTabs = tabs.filter(tab => tab.label !== targetName)
-					this.unSavedTabs = this.unSavedTabs.filter(item => item != targetName)
 				} else {
 					this.$confirm('修改未保存，确认要放弃保存修改的内容吗？')
 						.then(_ => {
+							this.editableTabsValue = activeName
 							this.editableTabs = tabs.filter(tab => tab.label !== targetName)
-							this.unSavedTabs = this.unSavedTabs.filter(item => item != targetName)
+							Bus.$emit('current-tab-saved', this.getEditStat())
 							done()
 						})
 						.catch(_ => {})
 				}
-
 			},
-
+			clickTab(targetName) {
+				Bus.$emit('current-tab-saved', this.getEditStat())
+			},
+			getIndexOfTabs() {
+				let index = -1
+				$.each(this.editableTabs, (key, value) => {
+					if (value.label == this.editableTabsValue) {
+						index = key
+					}
+				})
+				return index
+			},
+			setEditStat(obj){
+				$.each(this.editableTabs,(key,value)=>{
+					if(obj.label == value.label){
+						value.saved = obj.saved
+					}
+				})
+			},
+			getEditStat() {
+				let index = this.getIndexOfTabs()
+				if(index>-1){
+					return this.editableTabs[index]
+				}else{
+					return {}
+				}
+			}
 		}
 	}
 </script>

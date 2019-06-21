@@ -19,43 +19,53 @@
 </template>
 
 <script>
+	import $ from 'Jquery'
 	import Bus from '../Bus.js'
 	import AddScene from '../Dialog/AddScene'
-	
+
 	export default {
 		name: "top",
 		data() {
 			return {
-				showAddScene:false,
-				configed:false,
-				saveBtnDisable:false,
-				saveAllBtnDisable:false,
-				publishBtnDisable:false,
+				showAddScene: false,
+				configed: false,
+				saveBtnDisable: true,
+				saveAllBtnDisable: true,
+				publishBtnDisable: true,
 			}
 		},
 		components: {
 			AddScene
 		},
 		mounted() {
-			
+			Bus.$on('current-tab-saved', content => {
+				console.log('content',content)
+				if(!$.isEmptyObject(content)){
+					this.saveBtnDisable = content.saved
+				}else{
+					this.saveBtnDisable =true
+				}
+				
+			})
 		},
 		methods: {
-			save(){
+			save() {
 				
 			},
-			saveAll(){
-				
+			saveAll() {
+
 			},
-			publish(){
-				
+			publish() {
+
 			},
-			addScence(){
-				this.showAddScene =true
+			addScence() {
+				this.configed = true
+				this.showAddScene = true
 			},
-			addModle(){
-				
+			addModle() {
+
 			}
-		}
+		},
 	}
 </script>
 
@@ -63,7 +73,7 @@
 	.main-menu-addgroup {
 		margin: 0px 40px;
 	}
-	
+
 	.main-menu-panel .el-button {
 		padding: 3px 14px;
 	}

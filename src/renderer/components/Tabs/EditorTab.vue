@@ -17,7 +17,7 @@
 				fcode: '',
 				width: '600',
 				height: '400',
-				saved: true
+				stat:{}
 			}
 		},
 		props: {
@@ -30,10 +30,11 @@
 			this.editor = this.$refs.editor.editor
 			this.editor.setShowPrintMargin(false)
 			this.updateSize()
+			this.stat = this.json
 			Bus.$on('resize', content => {
 				this.updateSize()
 			})
-			fs.readFile(this.json.file, (err, data) => {
+			fs.readFile(this.stat.file, (err, data) => {
 				if (err) {
 					this.$message.error('未找到该文件')
 				} else {
@@ -52,22 +53,20 @@
 			updateSize() {
 				this.$set(this.$data, 'width', $(this.$el).parent().width())
 				this.$set(this.$data, 'height', $(this.$el).parent().height())
+			},
+			save(){
+				this.fcode = this.code
+				fs.writeFileSync(this.stat.file, this.code)
+				this.saved = true
 			}
 		},
 		watch: {
 			code: {
 				handler(nv) {
 					if (nv != this.fcode) {
-						this.saved = false
+						this.stat.saved = false
+						Bus.$emit('current-tab-saved', this.stat)
 					}
-				}
-			},
-			saved: {
-				handler() {
-					Bus.$emit('page-state', {
-						label: this.$el.id,
-						saved: this.saved
-					})
 				}
 			}
 		}
