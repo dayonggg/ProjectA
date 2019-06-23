@@ -31,7 +31,7 @@
 				configed: false,
 				saveBtnDisable: true,
 				saveAllBtnDisable: true,
-				publishBtnDisable: true,
+				publishBtnDisable: false,
 			}
 		},
 		components: {
@@ -39,18 +39,20 @@
 		},
 		mounted() {
 			Bus.$on('current-tab-saved', content => {
-				console.log('content',content)
-				if(!$.isEmptyObject(content)){
+				if (!$.isEmptyObject(content)) {
 					this.saveBtnDisable = content.saved
-				}else{
-					this.saveBtnDisable =true
+				} else {
+					this.saveBtnDisable = true
 				}
-				
+
+			})
+			Bus.$on('tabs-saved', content => {
+				this.saveAllBtnDisable = content
 			})
 		},
 		methods: {
 			save() {
-				
+				Bus.$emit('save-tab', true)
 			},
 			saveAll() {
 

@@ -2,9 +2,9 @@
 	<el-tabs v-model="editableTabsValue" type="border-card" closable @tab-remove="removeTab" @tab-click="clickTab">
 		<el-tab-pane v-for="(item, index) in editableTabs" :key="item.label" :label="item.label" :name="item.label">
 			<span slot="label"><i v-show="!item.saved">*</i>{{item.label}}</span>
-			<table-tab v-if="item.extname == '.xlsx'" :id="item.label" :target="item"></table-tab>
+			<table-tab ref='table-tab' v-if="item.extname == '.xlsx'" :id="item.label" :target="item"></table-tab>
 			<config-tab v-if="item.extname == 'conf'" :id="item.label" :cfg='item'></config-tab>
-			<editor-tab v-if="item.extname == '.ls' || item.extname == '.lh' || item.extname == '.lmat'|| item.extname == '.lav'"
+			<editor-tab ref='editor-tab' v-if="item.extname == '.ls' || item.extname == '.lh' || item.extname == '.lmat'|| item.extname == '.lav'"
 			 :id="item.label" :json="item"></editor-tab>
 			<image-tab v-if="item.extname == '.png' || item.extname == '.jpg' || item.extname == '.jpeg'" :id="item.label" :img="item"></image-tab>
 		</el-tab-pane>
@@ -41,6 +41,24 @@
 			Bus.$on('current-tab-saved', content => {
 				if(!$.isEmptyObject(content)){
 					this.setEditStat(content)
+				}
+				
+			})
+			Bus.$on('save-tab', content => {
+				if(content){
+					this.saveTarget(this.editableTabsValue)
+					this.sendAllSavedStat()
+				}
+			})
+			Bus.$on('save-all', content => {
+				if(content){
+					$.each(this.editableTabs,(key,value)=>{
+						if(!value.saved){
+							this.saveTarget(value.label)
+							value.saved = true
+						}
+					})
+					this.sendAllSavedStat()
 				}
 				
 			})
@@ -93,10 +111,12 @@
 							this.editableTabsValue = activeName
 							this.editableTabs = tabs.filter(tab => tab.label !== targetName)
 							Bus.$emit('current-tab-saved', this.getEditStat())
+							this.sendAllSavedStat()
 							done()
 						})
 						.catch(_ => {})
 				}
+				
 			},
 			clickTab(targetName) {
 				Bus.$emit('current-tab-saved', this.getEditStat())
@@ -124,6 +144,26 @@
 				}else{
 					return {}
 				}
+			},
+			saveTarget(id){
+				$.each(this.$refs,(i,v1)=>{
+					$.each(v1,(j,v2)=>{
+						if(id == v2.$el.id){
+							console.log(v2)
+							v2.save()
+							
+						}
+					})
+				})
+			},
+			sendAllSavedStat(){
+				let stat = true
+				$.each(this.editableTabs,(key,value)=>{
+					if(value.saved == false){
+						stat = false
+					}
+				})
+				Bus.$emit('tabs-saved',stat)
 			}
 		}
 	}

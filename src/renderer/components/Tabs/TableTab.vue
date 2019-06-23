@@ -1,5 +1,21 @@
 <template>
-	<hot-table v-show="show" ref="HT" :settings="hotSettings" width="100%" height="100%" licenseKey="non-commercial-and-evaluation"></hot-table>
+	<div class="tableTab" v-show="show">
+		<el-row class="config-panel">
+			<el-col :span="12">客户端忽略：
+				<el-select v-model="clientIgnore" size="mini" multiple filterable allow-create default-first-option placeholder="客户端忽略">
+					<el-option v-for="item in options" :key="item" :label="item" :value="item"></el-option>
+				</el-select>
+			</el-col>
+			<el-col :span="12">服务器忽略：
+				<el-select v-model="serverIgnore" size="mini" multiple filterable allow-create default-first-option placeholder="服务器忽略">
+					<el-option v-for="item in options" :key="item" :label="item" :value="item"></el-option>
+				</el-select>
+			</el-col>
+		</el-row>
+		<el-row class="table-panel">
+			<hot-table ref="HT" :settings="hotSettings" licenseKey="non-commercial-and-evaluation"></hot-table>
+		</el-row>
+	</div>
 </template>
 
 <script>
@@ -14,7 +30,7 @@
 			return {
 				show: false,
 				filedata: [],
-				settings:{},
+				settings: {},
 				hotSettings: {
 					colHeaders: true, //当值为true时显示行头，当值为数组时，行头为数组的值
 					columns: [], //设置列数据类型，项目只提供text和numeric
@@ -39,6 +55,9 @@
 						}
 					},
 				},
+				options: [],
+				clientIgnore: [],
+				serverIgnore: []
 			}
 		},
 		components: {
@@ -58,7 +77,8 @@
 					this.settings = this.$refs.HT.settings
 					this.settings.colHeaders = this.filedata[2]
 					this.settings.columns = this.getDataType(this.filedata[1])
-					this.settings.data=this.filedata.filter((item, index) => index >= 3)
+					this.settings.data = this.filedata.filter((item, index) => index >= 3)
+					this.options = this.filedata[2]
 					this.show = true
 				} else {
 					this.$message.error('无效数据文件')
@@ -85,5 +105,25 @@
 </script>
 
 <style>
-	@import '~handsontable/dist/handsontable.full.css'
+	.tableTab {
+		width: 100%;
+		height: 100%;
+		overflow: hidden;
+	}
+
+	.config-panel {
+		height: 40px;
+	}
+
+	.table-panel {
+		height: -webkit-calc(100% - 45px);
+		width: 100%;
+		overflow: auto;
+	}
+
+	.el-select {
+		min-width: 200px !important;
+		max-width: 300px !important;
+		width: -webkit-calc(100% - 100px) !important;
+	}
 </style>

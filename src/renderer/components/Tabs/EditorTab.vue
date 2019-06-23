@@ -55,9 +55,11 @@
 				this.$set(this.$data, 'height', $(this.$el).parent().height())
 			},
 			save(){
+				console.log('1111111111111111')
 				this.fcode = this.code
 				fs.writeFileSync(this.stat.file, this.code)
-				this.saved = true
+				this.stat.saved = true
+				Bus.$emit('current-tab-saved', this.stat)
 			}
 		},
 		watch: {

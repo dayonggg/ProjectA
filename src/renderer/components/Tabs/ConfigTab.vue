@@ -65,7 +65,6 @@
 
 <script>
 	import Bus from '../Bus'
-	import table from '../table.js'
 	import IgnoreSelect from './IgnoreSelect'
 
 	export default {
@@ -93,11 +92,6 @@
 		mounted() {
 			console.log(this.cfg)
 			this.modelGroups = this.config.content.treeData[1].lhDir
-			// this.tables = this.cfg.content.treeData[0].children
-			// 			let tableList = []
-			// 			for (let i = 0; i < this.tables.length; i++) {
-			// 				tableList.push(this.tables[i].label)
-			// 			}
 			Bus.$on('updataIgnore', content => {
 				let t = this.tables
 				for (let i = 0; i < t.length; i++) {

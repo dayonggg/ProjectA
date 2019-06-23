@@ -7,7 +7,6 @@
 
 <script>
 	import Bus from '../Bus'
-	import table from '../table.js'
 
 	export default {
 		name: "ignore-select",

@@ -27,6 +27,16 @@ export default {
 	},
 	resourceDirs: [],
 	treeData: [],
+	tables: [],
+	localConfig: {
+		exportConfig: [
+			{
+				name:'buff.xlsx',
+				clientIgnore:['id'],
+				serverIgnore:['name']
+			}
+		]
+	},
 
 	//初始化
 	init() {
@@ -52,8 +62,10 @@ export default {
 		})
 
 		Promise.all([ckv, initdir, gtl, rtl]).then((res) => {
-			console.log(this)
 			Bus.$emit('updataTableList', this.treeData)
+			let cstr = localStorage.getItem('config') || JSON.stringify(this.localConfig)
+			localStorage.setItem('config',cstr)
+			this.localConfig = JSON.parse(cstr)
 			Bus.$emit('initDone', true)
 		})
 	},
@@ -115,6 +127,7 @@ export default {
 				let tl = files.filter((t) => {
 					return t.endsWith('.xlsx')
 				})
+				this.tables = tl
 				callback && callback(tl)
 			}
 		})
@@ -206,10 +219,20 @@ export default {
 		return fs.existsSync(path.join(this.resDir, modelDir, filename + '.lh'))
 	},
 	
+	//返回xlsx文件内容
 	getExcelData(file) {
 		let list = xlsx.parse(file)
 		let data = list[0].data
 		return data
 	},
-
+	
+	//设置表格导出设置
+	setTableExportConfig(tableObj){
+		
+	},
+	
+	//返回表格导出设置
+	getTableExportConfig(tableObj){
+		
+	}
 }

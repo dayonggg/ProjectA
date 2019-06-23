@@ -48,12 +48,14 @@
 			Top
 		},
 		mounted() {
-			D.init()
+			this.$nextTick(()=>{
+				D.init()
+			})
 			Bus.$on('initDone',content=>{
 				if(content){
 					this.fullscreenLoading = false
 				}else{
-					console.error('加载失败文件列表失败')
+					console.error('初始化失败！！')
 				}
 			})
 		},
